@@ -1,0 +1,10 @@
+{
+  "name": "crisis-api",
+  "version": "0.0.1",
+  "description": "Crisis API",
+  "main": "index.js",
+  "repository": "git@github.com:y4nnL/fr.lojewski.crisis-api.git",
+  "author": "Yann LOJEWKSI <yann.lojewski@gmail.com>",
+  "license": "MIT",
+  "private": true
+}
