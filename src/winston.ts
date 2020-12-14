@@ -1,6 +1,8 @@
 import winston, { Logger } from 'winston'
 import chalk from 'chalk'
 
+import env from './env'
+
 function typeOf(object: any): string {
   let type = Object.prototype.toString.call(object).slice(8, -1).toLowerCase()
   const name = object?.constructor?.name?.toLowerCase()
@@ -15,6 +17,8 @@ function getLevelColor(level: string) {
   switch (level) {
     case 'info':
       return chalk.yellow(level)
+    case 'debug':
+      return chalk.cyan(level)
     case 'error':
       return chalk.red(level)
     default:
@@ -59,7 +63,7 @@ function stringifyMessage(message: any, whiteSpacesCount = 0, startWithNewLine =
 }
 
 export default function (service: string): Logger {
-  if (process.env.NODE_ENV === 'production') {
+  if (env.isProduction) {
     return winston.createLogger({
       level: 'info',
       format: winston.format.combine(

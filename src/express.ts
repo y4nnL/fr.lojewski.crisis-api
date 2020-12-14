@@ -1,8 +1,9 @@
 import express, { ErrorRequestHandler, NextFunction, RequestHandler } from 'express'
 import { Request, Response } from 'express-serve-static-core'
 
+import createLogger from './winston'
+import env from './env'
 import router from './router'
-import createLogger from './logger'
 
 declare global {
   namespace Express {
@@ -50,7 +51,7 @@ const notFoundHandler: RequestHandler = (request: Request, response: Response, n
 const errorHandler: ErrorRequestHandler =
   (error: APIError, request: Request, response: Response, next: NextFunction) => {
   const json: any = { message: error.message }
-  if ( process.env.NODE_ENV !== 'production') {
+  if (!env.isProduction) {
     json.stack = error.stack
   }
   httpLogger.error(`Finished ${ request.method } ${ request.url } ${ error.statusCode } ${ error.message }`)
