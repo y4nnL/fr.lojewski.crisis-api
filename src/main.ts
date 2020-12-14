@@ -1,8 +1,8 @@
-import express from 'express'
 import mongoose from 'mongoose'
 import createLogger from './logger'
 
-const app = express()
+import app from './express'
+
 const port = 8080
 const mainLogger = createLogger('main')
 
@@ -15,10 +15,6 @@ function connectDB() {
     .then(() => mainLogger.info(`Connected to MongoDB "${ db }"`))
     .catch(() => mainLogger.error(`Unable to connect to MongoDB "${ db }"`))
 }
-
-app.get('/', (req, res) => {
-  res.send('Hello world!')
-})
 
 connectDB()
   .then(() => {

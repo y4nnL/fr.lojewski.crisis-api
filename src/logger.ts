@@ -11,6 +11,17 @@ function typeOf(object: any): string {
   }
 }
 
+function getLevelColor(level: string) {
+  switch (level) {
+    case 'info':
+      return chalk.yellow(level)
+    case 'error':
+      return chalk.red(level)
+    default:
+      return chalk.grey(level)
+  }
+}
+
 function stringifyMessage(message: any, whiteSpacesCount = 0, startWithNewLine = true): string {
   const type = typeOf(message)
   const whiteSpaces = whiteSpacesCount ? new Array(whiteSpacesCount).join(' ') + ' ' : ''
@@ -26,19 +37,19 @@ function stringifyMessage(message: any, whiteSpacesCount = 0, startWithNewLine =
   } else if (type === 'object' || type === 'class') {
     let prefix = type === 'class' ? `(${ message.constructor.name }) ` : ''
     for (let key in message) {
-      if (message.hasOwnProperty(key)) {
+      if (message.hasOwnProperty && message.hasOwnProperty(key)) {
         return [
           `${ startWithNewLine ? `\n${ whiteSpaces }` : '' }${ prefix }{\n`,
           `${ whiteSpacesPlus2 }${ chalk.rgb(152, 118, 170).bgBlack(key) }: `,
           `${ stringifyMessage(message[key], whiteSpacesCount + 2, false) },\n`,
-          `${ whiteSpaces }}`
+          `${ whiteSpaces }}`,
         ].join('')
       }
     }
   } else if (type === 'array') {
-    const stringBuilder = [`\n${ whiteSpaces }[`]
+    const stringBuilder = [ `\n${ whiteSpaces }[` ]
     for (let i = 0, l = message.length; i < l; i++) {
-      stringBuilder.push(`${ whiteSpacesPlus2 }[${i}] ${ stringifyMessage(message[i], whiteSpacesCount + 2, false) },`)
+      stringBuilder.push(`${ whiteSpacesPlus2 }[${ i }] ${ stringifyMessage(message[i], whiteSpacesCount + 2, false) },`)
     }
     stringBuilder.push(`${ whiteSpaces }]`)
     return stringBuilder.join('\n')
@@ -51,7 +62,10 @@ export default function (service: string): Logger {
   if (process.env.NODE_ENV === 'production') {
     return winston.createLogger({
       level: 'info',
-      format: winston.format.json(),
+      format: winston.format.combine(
+        winston.format.timestamp(),
+        winston.format.json(),
+      ),
       defaultMeta: { service },
       transports: [
         new winston.transports.File({ filename: 'error.log', level: 'error' }),
@@ -65,7 +79,7 @@ export default function (service: string): Logger {
         return [
           new Date().toISOString(),
           `[${ debug.service }]`,
-          `${ chalk.yellow(debug.level) }:`,
+          `${ getLevelColor(debug.level) }:`,
           stringifyMessage(debug.message),
         ].join(' ')
       }),
