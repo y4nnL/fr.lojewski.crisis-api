@@ -34,6 +34,26 @@ export class APIError extends Error {
   
 }
 
+export class NotFoundAPIError extends APIError {
+  
+  constructor(contextMessage?: string) {
+    contextMessage ?
+      super(`${ httpStatus[404] } (${ contextMessage })`, 404) :
+      super(httpStatus[404], 404)
+  }
+  
+}
+
+export class UnauthorizedAPIError extends APIError {
+  
+  constructor(contextMessage?: string) {
+    contextMessage ?
+      super(`${ httpStatus[401] } (${ contextMessage })`, 401) :
+      super(httpStatus[401], 401)
+  }
+  
+}
+
 const app = express()
 const httpLogger = createLogger('http')
 
@@ -42,15 +62,15 @@ const logMiddleware: RequestHandler = (request: Request, response: Response, nex
   httpLogger.info(`Started ${ request.method } ${ request.url }`)
   response.on('finish', () => {
     if (!response.isErrorHandled) {
-      const finishTimeMS = new Date(new Date().getTime() - request.startTime.getTime()).getUTCMilliseconds() / 1000
-      httpLogger.info(`Finished ${ request.method } ${ request.url } ${ response.statusCode } ${ finishTimeMS }s`)
+      const finishTimeMS = new Date(new Date().getTime() - request.startTime.getTime()).getMilliseconds() / 1000
+      httpLogger.info(`Finished ${ request.method } ${ request.url } ${ response.statusCode } in ${ finishTimeMS }s`)
     }
   })
   next()
 }
 
 const notFoundHandler: RequestHandler = (request: Request, response: Response, next: NextFunction) => {
-  next(new APIError(httpStatus[404], httpStatus.NOT_FOUND))
+  next(new NotFoundAPIError())
 }
 
 const errorCaster: ErrorRequestHandler = (error: any, request: Request, response: Response, next: NextFunction) => {

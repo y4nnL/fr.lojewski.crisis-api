@@ -1,13 +1,12 @@
 import express from 'express'
 import jwt from 'jsonwebtoken'
-import httpStatus from 'http-status'
 import * as uuid from 'uuid'
 import { Joi, validate } from 'express-validation'
 import { RequestHandler, Request, Response, NextFunction } from 'express'
 
 import createLogger from './winston'
 import env from './env'
-import { APIError } from './express'
+import { UnauthorizedAPIError } from './express'
 import { TokenModel, User, UserModel } from './mongo'
 
 const routerLogger = createLogger('router')
@@ -49,10 +48,10 @@ const authSignInHandler: RequestHandler =
           next(e)
         }
       } else {
-        next(new APIError(httpStatus[401], httpStatus.UNAUTHORIZED))
+        next(new UnauthorizedAPIError())
       }
     } else {
-      next(new APIError(httpStatus[404], httpStatus.NOT_FOUND))
+      next(new UnauthorizedAPIError())
     }
   }
 
