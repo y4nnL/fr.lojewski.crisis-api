@@ -1,17 +1,19 @@
 export interface Env {
-  debug: boolean
-  mode: string
-  isProduction: boolean
-  isDevelopment: boolean
   dbUri: string
+  debug: boolean
+  isDevelopment: boolean
+  isProduction: boolean
+  jwtSecret: string
+  mode: string
 }
 
 const env: Env = {
-  debug: process.env.DEBUG === 'true',
-  mode: process.env.NODE_ENV,
   dbUri: process.env.DB_URI,
-  isProduction: process.env.NODE_ENV === 'production',
+  debug: process.env.DEBUG === 'true',
   isDevelopment: process.env.NODE_ENV === 'development',
+  isProduction: process.env.NODE_ENV === 'production',
+  jwtSecret: process.env.JWT_SECRET,
+  mode: process.env.NODE_ENV,
 }
 
 export default env

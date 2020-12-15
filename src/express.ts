@@ -1,5 +1,9 @@
-import express, { ErrorRequestHandler, NextFunction, RequestHandler } from 'express'
+import bodyParser from 'body-parser'
+import express from 'express'
+import httpStatus from 'http-status'
+import { ErrorRequestHandler, NextFunction, RequestHandler } from 'express'
 import { Request, Response } from 'express-serve-static-core'
+import { ValidationError } from 'express-validation'
 
 import createLogger from './winston'
 import env from './env'
@@ -10,19 +14,20 @@ declare global {
     interface Request {
       startTime?: Date
     }
+    
     interface Response {
       isErrorHandled?: boolean
     }
   }
 }
 
-class APIError extends Error {
+export class APIError extends Error {
   
   message: string
   statusCode: number
   
   constructor(message: string, statusCode: number) {
-    super();
+    super()
     this.message = message
     this.statusCode = statusCode
   }
@@ -45,25 +50,45 @@ const logMiddleware: RequestHandler = (request: Request, response: Response, nex
 }
 
 const notFoundHandler: RequestHandler = (request: Request, response: Response, next: NextFunction) => {
-  next(new APIError('API not found', 404))
+  next(new APIError(httpStatus[404], httpStatus.NOT_FOUND))
+}
+
+const errorCaster: ErrorRequestHandler = (error: any, request: Request, response: Response, next: NextFunction) => {
+  if (error instanceof ValidationError) {
+    const message = error.details.body.map((detail) => detail.message).join(', ')
+    error = new APIError(`${ error.error } (${ message })`, error.statusCode)
+    error.stack = ''
+  } else {
+    if (!(error instanceof APIError)) {
+      const stack = error?.stack
+      error = new APIError(error.message || error, httpStatus.INTERNAL_SERVER_ERROR)
+      error.stack = stack || ''
+    }
+  }
+  next(error)
 }
 
 const errorHandler: ErrorRequestHandler =
   (error: APIError, request: Request, response: Response, next: NextFunction) => {
-  const json: any = { message: error.message }
-  if (!env.isProduction) {
-    json.stack = error.stack
+    const json: any = { message: error.message }
+    httpLogger.error(`Finished ${ request.method } ${ request.url } ${ error.statusCode } ${ error.message }`)
+    if (error.stack) {
+      httpLogger.error(error.stack)
+      if (!env.isProduction) {
+        json.stack = error.stack
+      }
+    }
+    response.isErrorHandled = true
+    response.status(error.statusCode)
+    response.json(json)
   }
-  httpLogger.error(`Finished ${ request.method } ${ request.url } ${ error.statusCode } ${ error.message }`)
-  httpLogger.error(error.stack)
-  response.isErrorHandled = true
-  response.status(error.statusCode)
-  response.json(json)
-};
 
-app.use(logMiddleware);
-app.use('/api', router);
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: true }))
+app.use(logMiddleware)
+app.use('/api', router)
 app.use(notFoundHandler)
+app.use(errorCaster)
 app.use(errorHandler)
 
 export default app
