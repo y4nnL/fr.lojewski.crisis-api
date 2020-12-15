@@ -27,31 +27,30 @@ const router = express.Router()
 
 const authSignInHandler: RequestHandler =
   async (request: Request<{}, {}, AuthSignInBody>, response: Response, next: NextFunction) => {
-    let user: User = null
     try {
-      user = await UserModel.findOne({ email: request.body.email }).exec()
-    } catch (e) {
-      next(e)
-    }
-    if (user) {
-      const isPasswordChecked = await user.checkPassword(request.body.password)
-      if (isPasswordChecked && user.password && user.isValidated && !user.isDisabled) {
-        const authToken = new TokenModel()
-        authToken.type = 'auth'
-        authToken.token = uuid.v4()
-        authToken.userId = user._id
-        try {
-          await authToken.save()
-          routerLogger.info(`User ${ user.email } successfully signed in`)
-          response.json({ token: jwt.sign({ token: authToken.token }, env.jwtSecret, { expiresIn: '1w' }) })
-        } catch (e) {
-          next(e)
+      const user = await UserModel.findOne({ email: request.body.email }).exec()
+      if (user) {
+        const isPasswordChecked = await user.checkPassword(request.body.password)
+        if (user.password && user.isValidated && !user.isDisabled && isPasswordChecked) {
+          const authToken = new TokenModel()
+          authToken.type = 'auth'
+          authToken.token = uuid.v4()
+          authToken.userId = user._id
+          try {
+            await authToken.save()
+            routerLogger.info(`User ${ user.email } successfully signed in`)
+            response.json({ token: jwt.sign({ token: authToken.token }, env.jwtSecret, { expiresIn: '1w' }) })
+          } catch (e) {
+            next(e)
+          }
+        } else {
+          next(new UnauthorizedAPIError())
         }
       } else {
         next(new UnauthorizedAPIError())
       }
-    } else {
-      next(new UnauthorizedAPIError())
+    } catch (e) {
+      next(e)
     }
   }
 
