@@ -37,22 +37,24 @@ const router = express.Router()
 
 const authorize = (...methods: Method[]): RequestHandler => async (request, response, next) => {
   const header = request.get('X-Authorization')
-  const token = header ? header.slice(7) : ''
+  const authorization = header ? header.slice(7) : ''
   try {
-    const tokenData: Token = <Token>jwt.verify(token, env.jwtSecret, { maxAge: TOKEN_DURATION })
+    const tokenData: Token = <Token>jwt.verify(authorization, env.jwtSecret, { maxAge: TOKEN_DURATION })
     const authToken = await TokenModel.findOne({ token: tokenData.token }).exec()
     assert.strictEqual(authToken.type, TokenType.Authorization)
     const user = await UserModel.findById(authToken.userId).exec()
-    const authorizations = await Promise.all(methods.map(async (method) => await user.can(method)))
-    assert.strictEqual(authorizations.indexOf(false) < 0, true)
+    if (methods.length) {
+      const userCan = await Promise.all(methods.map(async (method) => await user.can(method)))
+      assert.strictEqual(userCan.indexOf(false) < 0, true)
+    }
     request.user = user
     routerLogger.info(`Token bearer is authorized (email:${ user.email })`)
     next()
   } catch (e) {
     // TODO <yann> It would be better considering a cron operation to clean up the tokens in the database
-    if (token) {
+    if (authorization) {
       try {
-        const tokenData: Token = <Token>jwt.decode(token)
+        const tokenData: Token = <Token>jwt.decode(authorization)
         await TokenModel.find({ token: tokenData.token }).deleteMany().exec()
       } catch (e) {
       }
@@ -81,7 +83,8 @@ const authSignInHandler: RequestHandler = async (request: Request<{}, {}, AuthSi
           routerLogger.info(`User ${ user.email } successfully signed in`)
           response.json({ token: jwt.sign({ token: authToken.token }, env.jwtSecret, { expiresIn: TOKEN_DURATION }) })
         } catch (e) {
-          next(e)
+          routerLogger.error(e)
+          next(new UnauthorizedAPIError())
         }
       } else {
         next(new UnauthorizedAPIError())
@@ -90,13 +93,25 @@ const authSignInHandler: RequestHandler = async (request: Request<{}, {}, AuthSi
       next(new UnauthorizedAPIError())
     }
   } catch (e) {
-    next(e)
+    routerLogger.error(e)
+    next(new UnauthorizedAPIError())
+  }
+}
+
+const authSignOutHandler: RequestHandler = async (request, response, next) => {
+  try {
+    await TokenModel.find({ userId: request.user._id }).deleteMany().exec()
+    routerLogger.info(`User ${ request.user.email } successfully signed out`)
+    response.json({ success: true })
+  } catch (e) {
+    routerLogger.error(e)
+    next(new UnauthorizedAPIError('Failed to delete authorization tokens'))
   }
 }
 
 router.route('/ping')
   .get(
-    authorize(Method.Ping),
+    authorize(),
     pingHandler,
   )
 
@@ -104,6 +119,12 @@ router.route('/auth/sign-in')
   .post(
     validate(authSignInValidation),
     authSignInHandler,
+  )
+
+router.route('/auth/sign-out')
+  .get(
+    authorize(),
+    authSignOutHandler,
   )
 
 export default router
