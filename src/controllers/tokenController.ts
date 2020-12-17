@@ -4,16 +4,19 @@ import * as uuid from 'uuid'
 
 import createLogger from '../logger'
 import env from '../env'
-import { TokenModel, UserModel } from '../mongo'
+import { TokenModel } from '../mongo'
 import { UnauthorizedAPIError } from '../express'
 import { Token, User } from '../types'
 
-const tokenControllerLogger = createLogger('tokenController')
+const tokenControllerLogger = createLogger('token')
 
-export const createAuthorizationTokenHandler: Token.CreateAuthorizationRequestHandler = async (request, response, next) => {
+export const tokenAuthorizationCreate: Token.AuthorizationCreateRequestHandler = async (request, response, next) => {
+  if (!request.user) {
+    return next(new UnauthorizedAPIError())
+  }
+  const user = request.user
   try {
-    const user = await UserModel.findOne({ email: request.body.email }).exec()
-    const canCreate = await user.canPerform(User.Action.CreateAuthorizationToken)
+    const canCreate = await user.canPerform(User.Action.TokenAuthorizationCreate)
     assert.strictEqual(canCreate, true, `User ${ user.email } is not allowed to create an authorization token`)
     const hasPasswordMatched = await user.matchPassword(request.body.password)
     assert.strictEqual(hasPasswordMatched, true, 'Password mismatch')
@@ -32,13 +35,14 @@ export const createAuthorizationTokenHandler: Token.CreateAuthorizationRequestHa
   }
 }
 
-export const deleteAuthorizationTokenHandler: Token.DeleteAuthorizationRequestHandler = async (request, response, next) => {
+export const tokenAuthorizationDelete: Token.AuthorizationDeleteRequestHandler = async (request, response, next) => {
   if (!request.user) {
     return next(new UnauthorizedAPIError())
   }
+  const user = request.user
   try {
-    await TokenModel.find({ userId: request.user._id }).deleteMany().exec()
-    tokenControllerLogger.info(`User ${ request.user.email } successfully signed out`)
+    await TokenModel.find({ userId: user._id }).deleteMany().exec()
+    tokenControllerLogger.info(`User ${ user.email } successfully deleted an authorization token`)
     response.json({ success: true })
   } catch (e) {
     tokenControllerLogger.error(e)

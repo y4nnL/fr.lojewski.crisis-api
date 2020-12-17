@@ -2,9 +2,9 @@ import createLogger from '../logger'
 import { Monitoring } from '../types'
 import { UnauthorizedAPIError } from '../express'
 
-const monitoringControllerLogger = createLogger('monitoringController')
+const monitoringControllerLogger = createLogger('monitoring')
 
-export const pingMonitoringHandler: Monitoring.PingRequestHandler = async (request, response, next) => {
+export const monitoringPing: Monitoring.PingRequestHandler = async (request, response, next) => {
   if (!request.user) {
     return next(new UnauthorizedAPIError())
   }

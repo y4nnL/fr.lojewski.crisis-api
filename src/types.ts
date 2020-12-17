@@ -29,6 +29,12 @@ export const joiRequiredEmail = Joi.string().email().required()
 export const joiRequiredPassword = Joi.string().regex(/[a-zA-Z0-9]{8,30}/).required()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Global request handlers
+
+export type EmailRequestBody = { email: string }
+export type EmailRequestHandler = RequestHandler<{}, {}, EmailRequestBody>
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Monitoring
 
 export namespace Monitoring {
@@ -57,13 +63,13 @@ export namespace Token {
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Request handlers
   
-  export type CreateAuthorizationRequestBody = { email: string, password: string }
-  export type CreateAuthorizationResponseBody = { token: string }
-  export type CreateAuthorizationRequestHandler =
-    RequestHandler<{}, CreateAuthorizationResponseBody, CreateAuthorizationRequestBody>
+  export type AuthorizationCreateRequestBody = { email: string, password: string }
+  export type AuthorizationCreateResponseBody = { token: string }
+  export type AuthorizationCreateRequestHandler =
+    RequestHandler<{}, AuthorizationCreateResponseBody, AuthorizationCreateRequestBody>
   
-  export type DeleteAuthorizationResponseBody = { success: true }
-  export type DeleteAuthorizationRequestHandler = RequestHandler<{}, DeleteAuthorizationResponseBody, {}>
+  export type AuthorizationDeleteResponseBody = { success: true }
+  export type AuthorizationDeleteRequestHandler = RequestHandler<{}, AuthorizationDeleteResponseBody, {}>
   
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Validations
@@ -86,11 +92,9 @@ export namespace User {
   // Helpers
   
   export enum Action {
-    CreateAuthorizationToken = 'token:create:authorization',
-    Ping = 'ping',
-    
-    ah = 'ah',
-    bhe = 'bhe',
+    MonitoringPing = 'monitoring:ping',
+    TokenAuthorizationCreate = 'token:authorization:create',
+    TokenAuthorizationDelete = 'token:authorization:delete',
   }
   
 }
