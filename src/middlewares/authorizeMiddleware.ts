@@ -1,9 +1,9 @@
 import assert from 'assert'
 import { RequestHandler } from 'express'
 
-import createLogger from '../logger'
-import { User } from '../types'
-import { UnauthorizedAPIError } from '../express'
+import createLogger from '@/logger'
+import { User } from '@/types'
+import { UnauthorizedAPIError } from '@/express'
 
 const authorizeMiddlewareLogger = createLogger('authorize')
 

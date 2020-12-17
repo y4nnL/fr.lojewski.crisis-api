@@ -2,11 +2,11 @@ import assert from 'assert'
 import jwt from 'jsonwebtoken'
 import { RequestHandler } from 'express'
 
-import createLogger from '../logger'
-import env from '../env'
-import { Token } from '../types'
-import { TokenDocument, TokenModel, UserModel } from '../mongo'
-import { UnauthorizedAPIError } from '../express'
+import createLogger from '@/logger'
+import env from '@/env'
+import { Token } from '@/types'
+import { TokenDocument, TokenModel, UserModel } from '@/mongo'
+import { UnauthorizedAPIError } from '@/express'
 
 const findTokenBearerLogger = createLogger('findTokenBearer')
 

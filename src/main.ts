@@ -1,3 +1,5 @@
+require('module-alias/register')
+
 import createLogger from './logger'
 import mongo from './mongo'
 import server from './express'

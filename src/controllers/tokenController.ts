@@ -2,11 +2,11 @@ import assert from 'assert'
 import jwt from 'jsonwebtoken'
 import * as uuid from 'uuid'
 
-import createLogger from '../logger'
-import env from '../env'
-import { TokenModel } from '../mongo'
-import { UnauthorizedAPIError } from '../express'
-import { Token, User } from '../types'
+import createLogger from '@/logger'
+import env from '@/env'
+import { TokenModel } from '@/mongo'
+import { UnauthorizedAPIError } from '@/express'
+import { Token, User } from '@/types'
 
 const tokenControllerLogger = createLogger('token')
 

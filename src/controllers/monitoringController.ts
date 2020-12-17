@@ -1,6 +1,6 @@
-import createLogger from '../logger'
-import { Monitoring } from '../types'
-import { UnauthorizedAPIError } from '../express'
+import createLogger from '@/logger'
+import { Monitoring } from '@/types'
+import { UnauthorizedAPIError } from '@/express'
 
 const monitoringControllerLogger = createLogger('monitoring')
 
