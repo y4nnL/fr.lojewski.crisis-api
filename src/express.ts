@@ -61,7 +61,7 @@ export class UnauthorizedAPIError extends APIError {
   
 }
 
-const log: RequestHandler = (request: Request, response: Response, next: NextFunction) => {
+const log: RequestHandler = (request, response, next) => {
   request.startTime = new Date()
   httpLogger.info(`Started ${ request.method } ${ request.url }`)
   response.on('finish', () => {
@@ -73,7 +73,7 @@ const log: RequestHandler = (request: Request, response: Response, next: NextFun
   next()
 }
 
-const verifySignature: RequestHandler  = (request: Request, response: Response, next: NextFunction) => {
+const verifySignature: RequestHandler = (request, response, next) => {
   try {
     const parsed = httpSignature.parse(request)
     assert.strictEqual(env.sshKeys.indexOf(parsed.keyId) >= 0, true)
@@ -88,11 +88,11 @@ const verifySignature: RequestHandler  = (request: Request, response: Response, 
   }
 }
 
-const handleNotFound: RequestHandler = (request: Request, response: Response, next: NextFunction) => {
+const handleNotFound: RequestHandler = (request, response, next) => {
   next(new NotFoundAPIError())
 }
 
-const castError: ErrorRequestHandler = (error: any, request: Request, response: Response, next: NextFunction) => {
+const castError: ErrorRequestHandler = (error: any, request, response, next) => {
   if (error instanceof ValidationError) {
     const message = error.details.body.map((detail) => detail.message).join(', ')
     error = new APIError(`${ error.error } (${ message })`, error.statusCode)
@@ -107,20 +107,19 @@ const castError: ErrorRequestHandler = (error: any, request: Request, response: 
   next(error)
 }
 
-const handleError: ErrorRequestHandler =
-  (error: APIError, request: Request, response: Response, next: NextFunction) => {
-    const json: any = { message: error.message }
-    httpLogger.error(`Finished ${ request.method } ${ request.url } ${ error.statusCode } ${ error.message }`)
-    if (error.stack) {
-      httpLogger.error(error.stack)
-      if (!env.isProduction) {
-        json.stack = error.stack
-      }
+const handleError: ErrorRequestHandler = (error: APIError, request, response, next) => {
+  const json: any = { message: error.message }
+  httpLogger.error(`Finished ${ request.method } ${ request.url } ${ error.statusCode } ${ error.message }`)
+  if (error.stack) {
+    httpLogger.error(error.stack)
+    if (!env.isProduction) {
+      json.stack = error.stack
     }
-    response.isErrorHandled = true
-    response.status(error.statusCode)
-    response.json(json)
   }
+  response.isErrorHandled = true
+  response.status(error.statusCode)
+  response.json(json)
+}
 
 if (!fs.existsSync(env.pathCert) || !fs.existsSync(env.pathCertCA) || !fs.existsSync(env.pathCertKey)) {
   throw new Error('Unable to locate certificate files')

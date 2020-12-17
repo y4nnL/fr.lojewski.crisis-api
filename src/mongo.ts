@@ -7,26 +7,38 @@ import env from './env'
 
 const mongoLogger = createLogger('mongo')
 
+export enum Method {
+  Ping = 'ping',
+}
+
+export enum TokenType {
+  Authorization = 'authorization'
+}
+
 export interface User extends Document {
   email: string
   isDisabled: boolean
   isValidated: boolean
   password: string
+  can(method: Method): Promise<boolean>
   checkPassword(password: string): Promise<boolean>
 }
 
 export const userSchema: Schema = new Schema({
+  email: {
+    type: Schema.Types.String,
+    required: true,
+  },
   isDisabled: {
     type: Schema.Types.Boolean,
-    default: false,
+    default: true,
   },
   isValidated: {
     type: Schema.Types.Boolean,
     default: false,
   },
-  email: {
-    type: Schema.Types.String,
-    required: true,
+  methods: {
+    type: Schema.Types.Array,
   },
   password: {
     type: Schema.Types.String,
@@ -37,7 +49,9 @@ userSchema.methods.checkPassword = async function (password: string): Promise<bo
   return bcrypt.compare(password, this.password)
 }
 
-export type TokenType = 'auth'
+userSchema.methods.can = async function (method: Method): Promise<boolean> {
+  return this.methods.indexOf(method) >= 0
+}
 
 export interface Token extends Document {
   token: string
