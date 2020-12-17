@@ -2,29 +2,25 @@ import bcrypt from 'bcrypt'
 import mongoose from 'mongoose'
 import { Document, Schema } from 'mongoose'
 
-import createLogger from './winston'
+import createLogger from './logger'
 import env from './env'
+import { Token, User } from './types'
 
 const mongoLogger = createLogger('mongo')
 
-export enum Method {
-  Ping = 'ping',
-}
-
-export enum TokenType {
-  Authorization = 'authorization'
-}
-
-export interface User extends Document {
+export interface UserDocument extends Document {
   email: string
   isDisabled: boolean
   isValidated: boolean
   password: string
-  can(method: Method): Promise<boolean>
-  checkPassword(password: string): Promise<boolean>
+  canPerform(action: User.Action): Promise<boolean>
+  matchPassword(password: string): Promise<boolean>
 }
 
 export const userSchema: Schema = new Schema({
+  actions: {
+    type: Schema.Types.Array,
+  },
   email: {
     type: Schema.Types.String,
     required: true,
@@ -37,25 +33,22 @@ export const userSchema: Schema = new Schema({
     type: Schema.Types.Boolean,
     default: false,
   },
-  methods: {
-    type: Schema.Types.Array,
-  },
   password: {
     type: Schema.Types.String,
   },
 })
 
-userSchema.methods.checkPassword = async function (password: string): Promise<boolean> {
+userSchema.methods.canPerform = async function (action: User.Action): Promise<boolean> {
+  return this.actions.indexOf(action) >= 0
+}
+
+userSchema.methods.matchPassword = async function (password: string): Promise<boolean> {
   return bcrypt.compare(password, this.password)
 }
 
-userSchema.methods.can = async function (method: Method): Promise<boolean> {
-  return this.methods.indexOf(method) >= 0
-}
-
-export interface Token extends Document {
+export interface TokenDocument extends Document {
   token: string
-  type: TokenType
+  type: Token.Type
   userId: string
 }
 
@@ -74,8 +67,8 @@ export const tokenSchema = new Schema({
   },
 })
 
-export const UserModel = mongoose.model<User>('User', userSchema)
-export const TokenModel = mongoose.model<Token>('Token', tokenSchema)
+export const UserModel = mongoose.model<UserDocument>('User', userSchema)
+export const TokenModel = mongoose.model<TokenDocument>('Token', tokenSchema)
 
 export default async function connect() {
   const db = env.dbUri.split('/').pop()

@@ -1,6 +1,6 @@
-import server from './express'
+import createLogger from './logger'
 import mongo from './mongo'
-import createLogger from './winston'
+import server from './express'
 
 const port = 8443
 const mainLogger = createLogger('main')

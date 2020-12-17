@@ -1,5 +1,6 @@
-import winston, { Logger } from 'winston'
 import chalk from 'chalk'
+import winston from 'winston'
+import { Logger } from 'winston'
 
 import env from './env'
 

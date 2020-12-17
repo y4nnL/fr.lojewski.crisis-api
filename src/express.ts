@@ -8,24 +8,12 @@ import path from 'path'
 import { ErrorRequestHandler, RequestHandler } from 'express'
 import { ValidationError } from 'express-validation'
 
-import createLogger from './winston'
+import createLogger from './logger'
 import env from './env'
 import router from './router'
 
 // No types
 const httpSignature = require('http-signature')
-
-declare global {
-  namespace Express {
-    interface Request {
-      startTime?: Date
-    }
-    
-    interface Response {
-      isErrorHandled?: boolean
-    }
-  }
-}
 
 export class APIError extends Error {
   
