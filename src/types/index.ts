@@ -1,7 +1,7 @@
 import { Joi } from 'express-validation'
 import { RequestHandler } from 'express'
 
-import { UserDocument } from './mongo'
+import { UserDocument } from '@/models/User'
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Express augmentation

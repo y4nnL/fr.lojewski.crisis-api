@@ -2,7 +2,7 @@ import chalk from 'chalk'
 import winston from 'winston'
 import { Logger } from 'winston'
 
-import env from './env'
+import env from '@/utils/env'
 
 function typeOf(object: any): string {
   let type = Object.prototype.toString.call(object).slice(8, -1).toLowerCase()

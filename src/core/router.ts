@@ -1,12 +1,12 @@
 import express from 'express'
 import { validate } from 'express-validation'
 
-import { authorize } from './middlewares/authorizeMiddleware'
-import { findTokenBearer } from './middlewares/findTokenBearerMiddleware'
-import { findUserByEmail } from './middlewares/findUserByEmailMiddleware'
-import { monitoringPing } from './controllers/monitoringController'
-import { Token, User } from './types'
-import { tokenAuthorizationCreate, tokenAuthorizationDelete } from './controllers/tokenController'
+import { authorize } from '@/middlewares/authorizeMiddleware'
+import { findTokenBearer } from '@/middlewares/findTokenBearerMiddleware'
+import { findUserByEmail } from '@/middlewares/findUserByEmailMiddleware'
+import { monitoringPing } from '@/controllers/monitoringController'
+import { Token, User } from '@/types'
+import { tokenAuthorizationCreate, tokenAuthorizationDelete } from '@/controllers/tokenController'
 
 const router = express.Router()
 

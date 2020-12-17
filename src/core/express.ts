@@ -8,9 +8,9 @@ import path from 'path'
 import { ErrorRequestHandler, RequestHandler } from 'express'
 import { ValidationError } from 'express-validation'
 
-import createLogger from './logger'
-import env from './env'
-import router from './router'
+import createLogger from '@/utils/logger'
+import env from '@/utils/env'
+import router from '@/core/router'
 
 // No types
 const httpSignature = require('http-signature')
