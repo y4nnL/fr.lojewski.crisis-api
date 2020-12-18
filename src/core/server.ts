@@ -28,10 +28,8 @@ app.use(middleware.handleNotFound)
 app.use(middleware.castError)
 app.use(middleware.handleError)
 
-export async function startServer() {
+export function startServer() {
   server.listen(env.serverPort, () => {
     serverLogger.info(`Server started on https://localhost:${ env.serverPort }/`)
   })
 }
-
-export default server

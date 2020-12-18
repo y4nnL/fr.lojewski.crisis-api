@@ -4,9 +4,9 @@ import mongoose from 'mongoose'
 
 const dbLogger = createLogger('db')
 
-export async function connectDB() {
-  const db = env.dbUri.split('/').pop()
+export async function connectDB(): Promise<boolean> {
   try {
+    const db = env.dbUri.split('/').pop()
     await mongoose.connect(env.dbUri, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
@@ -18,7 +18,9 @@ export async function connectDB() {
         dbLogger.debug(query)
       })
     }
+    return true
   } catch (e) {
-    dbLogger.error(`Unable to connect to "${ db }"`)
+    dbLogger.error(`Unable to connect to database`)
+    return false
   }
 }
