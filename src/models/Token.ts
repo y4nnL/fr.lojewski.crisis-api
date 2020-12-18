@@ -2,11 +2,13 @@ import mongoose from 'mongoose'
 import { Document, Schema } from 'mongoose'
 import { Token } from '@/types'
 
-export interface TokenDocument extends Document {
+export interface Token extends Document {
   token: string
   type: Token.Type
   userId: string
 }
+
+export type TokenDocument = Token & Document
 
 export const tokenSchema = new Schema({
   token: {

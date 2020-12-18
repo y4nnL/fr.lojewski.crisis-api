@@ -14,15 +14,13 @@ export const createAuthorizationToken: Token.Authorization.CreateRequestHandler 
   }
   const user = request.user
   try {
-    const canCreate = await user.canPerform(User.Action.TokenAuthorizationCreate)
-    assert.strictEqual(canCreate, true, `User ${ user.email } is not allowed to create an authorization token`)
     const hasPasswordMatched = await user.matchPassword(request.body.password)
     assert.strictEqual(hasPasswordMatched, true, 'Password mismatch')
-    const authToken = new TokenModel()
-    authToken.type = Token.Type.Authorization
-    authToken.token = uuid.v4()
-    authToken.userId = user._id
-    await authToken.save()
+    const authToken = await TokenModel.create({
+      type: Token.Type.Authorization,
+      token: uuid.v4(),
+      userId: user._id,
+    })
     tokenLogger.info(`User ${ user.email } successfully created an authorization token`)
     const signOptions = { expiresIn: Token.Duration.Authorization }
     const signedToken = jwt.sign({ token: authToken.token }, env.jwtSecret, signOptions)

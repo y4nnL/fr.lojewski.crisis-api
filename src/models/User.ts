@@ -3,7 +3,7 @@ import mongoose from 'mongoose'
 import { Document, Schema } from 'mongoose'
 import { User } from '@/types'
 
-export interface UserDocument extends Document {
+export interface User extends Document {
   email: string
   isDisabled: boolean
   isValidated: boolean
@@ -11,6 +11,8 @@ export interface UserDocument extends Document {
   canPerform(action: User.Action): Promise<boolean>
   matchPassword(password: string): Promise<boolean>
 }
+
+export type UserDocument = User & Document
 
 export const userSchema: Schema = new Schema({
   actions: {
