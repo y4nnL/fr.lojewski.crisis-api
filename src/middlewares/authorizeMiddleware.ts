@@ -2,8 +2,7 @@ import assert from 'assert'
 import { RequestHandler } from 'express'
 
 import createLogger from '@/utils/logger'
-import { User } from '@/types'
-import { UnauthorizedAPIError } from '@/core/server'
+import { UnauthorizedAPIError, User } from '@/types'
 
 const authorizeMiddlewareLogger = createLogger('authorize')
 

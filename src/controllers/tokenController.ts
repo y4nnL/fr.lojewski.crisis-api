@@ -4,9 +4,8 @@ import * as uuid from 'uuid'
 
 import createLogger from '@/utils/logger'
 import env from '@/utils/env'
-import { Token, User } from '@/types'
+import { Token, UnauthorizedAPIError, User } from '@/types'
 import { TokenModel } from '@/models/Token'
-import { UnauthorizedAPIError } from '@/core/server'
 
 const tokenLogger = createLogger('token')
 

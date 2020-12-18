@@ -1,3 +1,4 @@
+import httpStatus from 'http-status'
 import { Joi } from 'express-validation'
 import { RequestHandler } from 'express'
 
@@ -95,6 +96,42 @@ export namespace User {
     MonitoringPing = 'monitoring:ping',
     TokenAuthorizationCreate = 'token:authorization:create',
     TokenAuthorizationDelete = 'token:authorization:delete',
+  }
+  
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Custom errors
+
+export class APIError extends Error {
+  
+  message: string
+  statusCode: number
+  
+  constructor(message: string, statusCode: number) {
+    super()
+    this.message = message
+    this.statusCode = statusCode
+  }
+  
+}
+
+export class NotFoundAPIError extends APIError {
+  
+  constructor(contextMessage?: string) {
+    contextMessage ?
+      super(`${ httpStatus[404] } (${ contextMessage })`, 404) :
+      super(httpStatus[404], 404)
+  }
+  
+}
+
+export class UnauthorizedAPIError extends APIError {
+  
+  constructor(contextMessage?: string) {
+    contextMessage ?
+      super(`${ httpStatus[401] } (${ contextMessage })`, 401) :
+      super(httpStatus[401], 401)
   }
   
 }
