@@ -61,25 +61,29 @@ export namespace Token {
     Authorization = 'authorization'
   }
   
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  // Request handlers
+  export namespace Authorization {
   
-  export type AuthorizationCreateRequestBody = { email: string, password: string }
-  export type AuthorizationCreateResponseBody = { token: string }
-  export type AuthorizationCreateRequestHandler =
-    RequestHandler<{}, AuthorizationCreateResponseBody, AuthorizationCreateRequestBody>
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Request handlers
   
-  export type AuthorizationDeleteResponseBody = { success: true }
-  export type AuthorizationDeleteRequestHandler = RequestHandler<{}, AuthorizationDeleteResponseBody, {}>
+    export type CreateRequestBody = { email: string, password: string }
+    export type CreateResponseBody = { token: string }
+    export type CreateRequestHandler =
+      RequestHandler<{}, CreateResponseBody, CreateRequestBody>
   
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  // Validations
+    export type DeleteResponseBody = { success: true }
+    export type DeleteRequestHandler = RequestHandler<{}, DeleteResponseBody, {}>
+    
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Validations
   
-  export const createValidation = {
-    body: Joi.object({
-      email: joiRequiredEmail,
-      password: joiRequiredPassword,
-    }),
+    export const createValidation = {
+      body: Joi.object({
+        email: joiRequiredEmail,
+        password: joiRequiredPassword,
+      }),
+    }
+    
   }
   
 }

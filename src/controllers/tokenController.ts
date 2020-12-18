@@ -9,7 +9,7 @@ import { TokenModel } from '@/models/Token'
 
 const tokenLogger = createLogger('token')
 
-export const tokenAuthorizationCreate: Token.AuthorizationCreateRequestHandler = async (request, response, next) => {
+export const createAuthorizationToken: Token.Authorization.CreateRequestHandler = async (request, response, next) => {
   if (!request.user) {
     return next(new UnauthorizedAPIError())
   }
@@ -34,7 +34,7 @@ export const tokenAuthorizationCreate: Token.AuthorizationCreateRequestHandler =
   }
 }
 
-export const tokenAuthorizationDelete: Token.AuthorizationDeleteRequestHandler = async (request, response, next) => {
+export const deleteAuthorizationToken: Token.Authorization.DeleteRequestHandler = async (request, response, next) => {
   if (!request.user) {
     return next(new UnauthorizedAPIError())
   }
