@@ -6,7 +6,7 @@ import createLogger from '@/utils/logger'
 import env from '@/utils/env'
 import { Token } from '@/types'
 import { TokenDocument, TokenModel } from '@/models/Token'
-import { UnauthorizedAPIError } from '@/core/express'
+import { UnauthorizedAPIError } from '@/core/server'
 import { UserModel } from '@/models/User'
 
 const findTokenBearerLogger = createLogger('findTokenBearer')

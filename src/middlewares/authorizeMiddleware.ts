@@ -3,7 +3,7 @@ import { RequestHandler } from 'express'
 
 import createLogger from '@/utils/logger'
 import { User } from '@/types'
-import { UnauthorizedAPIError } from '@/core/express'
+import { UnauthorizedAPIError } from '@/core/server'
 
 const authorizeMiddlewareLogger = createLogger('authorize')
 

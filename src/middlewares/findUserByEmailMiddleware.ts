@@ -2,7 +2,7 @@ import assert from 'assert'
 
 import createLogger from '@/utils/logger'
 import { EmailRequestHandler } from '@/types'
-import { UnauthorizedAPIError } from '@/core/express'
+import { UnauthorizedAPIError } from '@/core/server'
 import { UserModel } from '@/models/User'
 
 const findUserByEmailMiddlewareLogger = createLogger('findUserByEmail')

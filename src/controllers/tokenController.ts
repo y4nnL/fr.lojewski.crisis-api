@@ -4,11 +4,11 @@ import * as uuid from 'uuid'
 
 import createLogger from '@/utils/logger'
 import env from '@/utils/env'
-import { TokenModel } from '@/models/Token'
-import { UnauthorizedAPIError } from '@/core/express'
 import { Token, User } from '@/types'
+import { TokenModel } from '@/models/Token'
+import { UnauthorizedAPIError } from '@/core/server'
 
-const tokenControllerLogger = createLogger('token')
+const tokenLogger = createLogger('token')
 
 export const tokenAuthorizationCreate: Token.AuthorizationCreateRequestHandler = async (request, response, next) => {
   if (!request.user) {
@@ -25,12 +25,12 @@ export const tokenAuthorizationCreate: Token.AuthorizationCreateRequestHandler =
     authToken.token = uuid.v4()
     authToken.userId = user._id
     await authToken.save()
-    tokenControllerLogger.info(`User ${ user.email } successfully created an authorization token`)
+    tokenLogger.info(`User ${ user.email } successfully created an authorization token`)
     const signOptions = { expiresIn: Token.Duration.Authorization }
     const signedToken = jwt.sign({ token: authToken.token }, env.jwtSecret, signOptions)
     response.json({ token: signedToken })
   } catch (e) {
-    tokenControllerLogger.error(e)
+    tokenLogger.error(e)
     next(new UnauthorizedAPIError())
   }
 }
@@ -42,10 +42,10 @@ export const tokenAuthorizationDelete: Token.AuthorizationDeleteRequestHandler =
   const user = request.user
   try {
     await TokenModel.find({ userId: user._id }).deleteMany().exec()
-    tokenControllerLogger.info(`User ${ user.email } successfully deleted an authorization token`)
+    tokenLogger.info(`User ${ user.email } successfully deleted an authorization token`)
     response.json({ success: true })
   } catch (e) {
-    tokenControllerLogger.error(e)
+    tokenLogger.error(e)
     next(new UnauthorizedAPIError('Failed to delete authorization tokens'))
   }
 }

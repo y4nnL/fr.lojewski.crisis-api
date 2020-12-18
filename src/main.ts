@@ -1,7 +1,7 @@
 require('module-alias/register')
 
 import createLogger from '@/utils/logger'
-import server from '@/core/express'
+import server from '@/core/server'
 import { connectDB } from '@/core/db'
 
 const port = 8443

@@ -1,13 +1,13 @@
 import createLogger from '@/utils/logger'
 import { Monitoring } from '@/types'
-import { UnauthorizedAPIError } from '@/core/express'
+import { UnauthorizedAPIError } from '@/core/server'
 
-const monitoringControllerLogger = createLogger('monitoring')
+const monitoringLogger = createLogger('monitoring')
 
 export const monitoringPing: Monitoring.PingRequestHandler = async (request, response, next) => {
   if (!request.user) {
     return next(new UnauthorizedAPIError())
   }
-  monitoringControllerLogger.info(`Ping from User ${ request.user.email }`)
+  monitoringLogger.info(`Ping from User ${ request.user.email }`)
   response.json({ pong: true })
 }
