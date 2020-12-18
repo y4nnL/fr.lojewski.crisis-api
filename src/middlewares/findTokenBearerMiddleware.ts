@@ -19,7 +19,7 @@ export const findTokenBearer: RequestHandler = async (request, response, next) =
     assert.strictEqual(authToken?.type, Token.Type.Authorization, 'Token not found or token type mismatch')
     const user = await UserModel.findById(authToken.userId).exec()
     request.user = user
-    findTokenBearerLogger.info(`Token bearer has been found (User ${ user.email })`)
+    findTokenBearerLogger.info(`Token bearer ${ user } has been found`)
     next()
   } catch (e) {
     findTokenBearerLogger.error(e)

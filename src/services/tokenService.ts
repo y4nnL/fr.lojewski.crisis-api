@@ -21,7 +21,7 @@ export const createAuthorizationToken: Token.Authorization.CreateRequestHandler 
       token: uuid.v4(),
       userId: user._id,
     })
-    tokenLogger.info(`User ${ user.email } successfully created an authorization token`)
+    tokenLogger.info(`${ user } successfully created an authorization token`)
     const signOptions = { expiresIn: Token.Duration.Authorization }
     const signedToken = jwt.sign({ token: authToken.token }, env.jwtSecret, signOptions)
     response.json({ token: signedToken })
@@ -38,10 +38,10 @@ export const deleteAuthorizationToken: Token.Authorization.DeleteRequestHandler 
   const user = request.user
   try {
     await TokenModel.find({ userId: user._id }).deleteMany().exec()
-    tokenLogger.info(`User ${ user.email } successfully deleted an authorization token`)
+    tokenLogger.info(`Deleted authorization token for ${ user }`)
     response.json({ success: true })
   } catch (e) {
     tokenLogger.error(e)
-    next(new UnauthorizedAPIError('Failed to delete authorization tokens'))
+    next(new UnauthorizedAPIError(`Failed to delete authorization tokens for ${ user }`))
   }
 }

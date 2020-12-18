@@ -30,6 +30,6 @@ app.use(middleware.handleError)
 
 export function startServer() {
   server.listen(env.serverPort, () => {
-    serverLogger.info(`Server started on https://localhost:${ env.serverPort }/`)
+    serverLogger.info(`Started on https://localhost:${ env.serverPort }/`)
   })
 }

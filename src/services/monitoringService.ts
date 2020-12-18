@@ -7,6 +7,6 @@ export const ping: Monitoring.PingRequestHandler = async (request, response, nex
   if (!request.user) {
     return next(new UnauthorizedAPIError())
   }
-  monitoringLogger.info(`Ping from User ${ request.user.email }`)
+  monitoringLogger.info(`${ request.user } ping OK`)
   response.json({ pong: true })
 }

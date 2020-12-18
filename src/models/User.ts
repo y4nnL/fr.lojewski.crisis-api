@@ -11,6 +11,7 @@ export interface User {
   password: string
   canPerform(action: User.Action): Promise<boolean>
   matchPassword(password: string): Promise<boolean>
+  toString(): string
 }
 
 export type UserDocument = User & Document
@@ -42,6 +43,10 @@ userSchema.methods.canPerform = async function (action: User.Action): Promise<bo
 
 userSchema.methods.matchPassword = async function (password: string): Promise<boolean> {
   return bcrypt.compare(password, this.password)
+}
+
+userSchema.methods.toString = function (): string {
+  return `[User ${ this.email }]`
 }
 
 export const UserModel = mongoose.model<UserDocument>('User', userSchema)
