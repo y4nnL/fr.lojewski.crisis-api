@@ -2,7 +2,7 @@ import express from 'express'
 import { validate } from 'express-validation'
 
 import * as middleware from '@/middlewares'
-import * as tokenController from '@/controllers/tokenController'
+import * as tokenService from '@/services/tokenService'
 import { Token, User } from '@/types'
 
 const router = express.Router()
@@ -12,12 +12,12 @@ router.route('/authorization')
     validate(Token.Authorization.createValidation),
     middleware.findUserByEmail,
     middleware.authorize(User.Action.TokenAuthorizationCreate),
-    tokenController.createAuthorizationToken,
+    tokenService.createAuthorizationToken,
   )
   .delete(
     middleware.findTokenBearer,
     middleware.authorize(User.Action.TokenAuthorizationDelete),
-    tokenController.deleteAuthorizationToken,
+    tokenService.deleteAuthorizationToken,
   )
 
 export default router
