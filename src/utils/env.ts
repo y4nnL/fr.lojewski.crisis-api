@@ -1,16 +1,4 @@
-export interface Env {
-  dbUri: string
-  debug: boolean
-  isDevelopment: boolean
-  isProduction: boolean
-  jwtSecret: string
-  mode: string
-  pathCert: string
-  pathCertCA: string
-  pathCertKey: string
-  sshKeys: string[]
-  sshKeysPath: string
-}
+import { Env } from '@/types'
 
 const env: Env = {
   dbUri: process.env.DB_URI,
@@ -22,6 +10,7 @@ const env: Env = {
   pathCert: process.env.PATH_CERT,
   pathCertCA: process.env.PATH_CERT_CA,
   pathCertKey: process.env.PATH_CERT_KEY,
+  serverPort: Number(process.env.SERVER_PORT),
   sshKeys: process.env.SSH_KEYS.split(';'),
   sshKeysPath: process.env.SSH_KEYS_PATH,
 }
