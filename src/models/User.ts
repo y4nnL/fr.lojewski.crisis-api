@@ -3,7 +3,8 @@ import mongoose from 'mongoose'
 import { Document, Schema } from 'mongoose'
 import { User } from '@/types'
 
-export interface User extends Document {
+export interface User {
+  actions: User.Action[]
   email: string
   isDisabled: boolean
   isValidated: boolean
