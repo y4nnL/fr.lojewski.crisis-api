@@ -1,10 +1,9 @@
 import assert from 'assert'
+import createLogger from '@/utils/logger'
+import env from '@/utils/env'
 import fs from 'fs'
 import path from 'path'
 import { RequestHandler } from 'express'
-
-import createLogger from '@/utils/logger'
-import env from '@/utils/env'
 import { UnauthorizedAPIError } from '@/types'
 
 const httpSignature = require('http-signature')

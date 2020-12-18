@@ -1,5 +1,4 @@
 import express from 'express'
-
 import * as middleware from '@/middlewares'
 import * as monitoringService from '@/services/monitoringService'
 import { User } from '@/types'

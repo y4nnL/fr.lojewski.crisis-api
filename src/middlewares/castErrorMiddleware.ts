@@ -1,8 +1,7 @@
 import httpStatus from 'http-status'
+import { APIError } from '@/types'
 import { ErrorRequestHandler } from 'express'
 import { ValidationError } from 'express-validation'
-
-import { APIError } from '@/types'
 
 export const castError: ErrorRequestHandler = (error: any, request, response, next) => {
   if (error instanceof ValidationError) {

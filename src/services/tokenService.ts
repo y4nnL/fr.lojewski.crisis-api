@@ -1,9 +1,8 @@
 import assert from 'assert'
-import jwt from 'jsonwebtoken'
-import * as uuid from 'uuid'
-
 import createLogger from '@/utils/logger'
 import env from '@/utils/env'
+import jwt from 'jsonwebtoken'
+import * as uuid from 'uuid'
 import { Token, UnauthorizedAPIError, User } from '@/types'
 import { TokenModel } from '@/models/Token'
 

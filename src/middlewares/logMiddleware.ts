@@ -1,5 +1,4 @@
 import { RequestHandler } from 'express'
-
 import { serverLogger } from '@/core/server'
 
 export const log: RequestHandler = (request, response, next) => {

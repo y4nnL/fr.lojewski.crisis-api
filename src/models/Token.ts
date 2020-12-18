@@ -1,5 +1,5 @@
-import mongoose, { Document, Schema } from 'mongoose'
-
+import mongoose from 'mongoose'
+import { Document, Schema } from 'mongoose'
 import { Token } from '@/types'
 
 export interface TokenDocument extends Document {

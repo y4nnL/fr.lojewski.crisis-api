@@ -1,5 +1,4 @@
 import express from 'express'
-
 import monitoringRouter from '@/routes/monitoringRoutes'
 import tokenRouter from '@/routes/tokenRoutes'
 

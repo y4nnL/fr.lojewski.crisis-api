@@ -1,5 +1,4 @@
 import assert from 'assert'
-
 import createLogger from '@/utils/logger'
 import { EmailRequestHandler, UnauthorizedAPIError } from '@/types'
 import { UserModel } from '@/models/User'

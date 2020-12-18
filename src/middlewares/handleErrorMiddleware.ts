@@ -1,8 +1,7 @@
-import { ErrorRequestHandler } from 'express'
-
 import createLogger from '@/utils/logger'
 import env from '@/utils/env'
 import { APIError } from '@/types'
+import { ErrorRequestHandler } from 'express'
 
 const handleErrorLogger = createLogger('handleError')
 

@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt'
-import mongoose, { Document, Schema } from 'mongoose'
-
+import mongoose from 'mongoose'
+import { Document, Schema } from 'mongoose'
 import { User } from '@/types'
 
 export interface UserDocument extends Document {

@@ -1,10 +1,9 @@
 import bodyParser from 'body-parser'
+import createLogger from '@/utils/logger'
+import env from '@/utils/env'
 import express from 'express'
 import fs from 'fs'
 import https from 'https'
-
-import createLogger from '@/utils/logger'
-import env from '@/utils/env'
 import router from '@/core/router'
 import * as middleware from '@/middlewares'
 

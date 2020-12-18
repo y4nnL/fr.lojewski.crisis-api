@@ -1,7 +1,6 @@
 import httpStatus from 'http-status'
 import { Joi } from 'express-validation'
 import { RequestHandler } from 'express'
-
 import { UserDocument } from '@/models/User'
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

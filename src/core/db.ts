@@ -1,7 +1,6 @@
-import mongoose from 'mongoose'
-
 import createLogger from '@/utils/logger'
 import env from '@/utils/env'
+import mongoose from 'mongoose'
 
 const dbLogger = createLogger('db')
 
