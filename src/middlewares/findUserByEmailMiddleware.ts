@@ -1,6 +1,7 @@
 import assert from 'assert'
 import createLogger from '@/utils/logger'
-import { EmailRequestHandler, UnauthorizedAPIError } from '@/types'
+import { EmailRequestHandler} from '@/types'
+import { UnauthorizedAPIError } from '@/types/error'
 import { UserModel } from '@/models/User'
 
 const findUserByEmailLogger = createLogger('findUserByEmail')

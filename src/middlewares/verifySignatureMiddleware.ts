@@ -5,7 +5,7 @@ import fs from 'fs'
 import httpSignature from 'http-signature'
 import path from 'path'
 import { RequestHandler } from 'express'
-import { UnauthorizedAPIError } from '@/types'
+import { UnauthorizedAPIError } from '@/types/error'
 
 const verifySignatureLogger = createLogger('verifySignature')
 
@@ -15,8 +15,8 @@ export const verifySignature: RequestHandler = (request, response, next) => {
     assert.strictEqual(env.sshKeys.indexOf(parsed.keyId) >= 0, true, 'Unknown keyId')
     const pub = fs.readFileSync(path.join(env.sshKeysPath, `${ parsed.keyId }.pub`), 'ascii')
     const isVerified = httpSignature.verify(parsed, pub)
-    assert.strictEqual(isVerified, true, `Request signature is not verified [Signature ${ parsed.keyId }]`)
-    verifySignatureLogger.info(`Request signature is verified [Signature ${ parsed.keyId }]`)
+    assert.strictEqual(isVerified, true, `Request [Signature ${ parsed.keyId }] is not verified`)
+    verifySignatureLogger.info(`Request [Signature ${ parsed.keyId }] is verified `)
     next()
   } catch (e) {
     verifySignatureLogger.error(e)

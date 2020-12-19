@@ -3,8 +3,9 @@ import createLogger from '@/utils/logger'
 import env from '@/utils/env'
 import jwt from 'jsonwebtoken'
 import * as uuid from 'uuid'
-import { Token, UnauthorizedAPIError, User } from '@/types'
+import { Token } from '@/types'
 import { TokenModel } from '@/models/Token'
+import { UnauthorizedAPIError } from '@/types/error'
 
 const tokenLogger = createLogger('token')
 
@@ -42,6 +43,6 @@ export const deleteAuthorizationToken: Token.Authorization.DeleteRequestHandler 
     response.json({ success: true })
   } catch (e) {
     tokenLogger.error(e)
-    next(new UnauthorizedAPIError(`Failed to delete authorization tokens for ${ user }`))
+    next(new UnauthorizedAPIError())
   }
 }

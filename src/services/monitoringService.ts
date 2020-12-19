@@ -1,5 +1,6 @@
 import createLogger from '@/utils/logger'
-import { Monitoring, UnauthorizedAPIError } from '@/types'
+import { Monitoring} from '@/types'
+import { UnauthorizedAPIError } from '@/types/error'
 
 const monitoringLogger = createLogger('monitoring')
 
