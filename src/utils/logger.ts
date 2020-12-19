@@ -1,7 +1,9 @@
 import chalk from 'chalk'
 import env from '@/utils/env'
 import winston from 'winston'
+import { APIError } from '@/types/error'
 import { format, Logger } from 'winston'
+import { FormatWrap } from 'logform'
 
 function typeOf(object: any): string {
   let type = Object.prototype.toString.call(object).slice(8, -1).toLowerCase()
@@ -26,26 +28,26 @@ function getLevelColor(level: string) {
   }
 }
 
-const fixErrorFormat = format(info => {
-  if (<any>info.message instanceof Error) {
-    info.message = <any>{
-      message: (<any>info.message).message,
-      name: (<any>info.message).name,
-      // stack: (<any>info.message).stack,
-      statusCode: (<any>info.message).statusCode,
+const fixError: FormatWrap = format((info) => {
+  const data = <any>info
+  if (data instanceof APIError) {
+    const message = {
+      message: data.message,
+      name: data.name,
+      statusCode: data.statusCode,
     }
+    return Object.assign({ message }, data)
   }
-  if (<any>info instanceof Error) {
-    return Object.assign({
-      message: {
-        message: (<any>info).message,
-        name: (<any>info).name,
-        // stack: (<any>info).stack,
-        statusCode: (<any>info).statusCode,
-      },
-    }, info)
+  if (data.message instanceof APIError) {
+    const error = data.message
+    const message = {
+      message: error.message,
+      name: error.name,
+      statusCode: error.statusCode,
+    }
+    Object.assign(data, { message })
   }
-  return info
+  return data
 })
 
 function stringifyMessage(message: any, whiteSpacesCount = 0, startWithNewLine = true): string {
@@ -102,7 +104,7 @@ export default function (service: string): Logger {
     return winston.createLogger({
       level: 'debug',
       format: winston.format.combine(
-        fixErrorFormat(),
+        fixError(),
         winston.format.printf(info => {
           return [
             new Date().toISOString(),
