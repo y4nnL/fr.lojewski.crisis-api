@@ -2,8 +2,14 @@ import chalk from 'chalk'
 import env from '@/utils/env'
 import winston from 'winston'
 import { APIError } from '@/types/error'
-import { format, Logger } from 'winston'
+import { format, LeveledLogMethod, Logger } from 'winston'
 import { FormatWrap } from 'logform'
+
+declare module 'winston' {
+  interface Logger {
+    pass: LeveledLogMethod
+  }
+}
 
 type Type =
     'ARRAY'
@@ -26,10 +32,14 @@ function typeOf(object: any): Type {
 
 function level(level: string) {
   switch (level) {
-    case 'info':
-      return chalk.yellow(level)
     case 'debug':
       return chalk.cyan(level)
+    case 'info':
+      return chalk.yellow(level)
+    case 'pass':
+      return chalk.green(level)
+    case 'warn':
+      return chalk.rgb(206, 100, 0)
     case 'error':
       return chalk.red(level)
     default:
@@ -100,9 +110,11 @@ namespace stringify {
 }
 
 export default function (service: string): Logger {
+  let logger: Logger
   if (env.isProduction) {
-    return winston.createLogger({
+    logger = winston.createLogger({
       level: 'info',
+      levels: { error: 0, warn: 1, pass: 2, info: 3, debug: 4 },
       format: winston.format.combine(
         winston.format.timestamp(),
         winston.format.json(),
@@ -114,8 +126,9 @@ export default function (service: string): Logger {
       ],
     })
   } else {
-    return winston.createLogger({
+    logger = winston.createLogger({
       level: 'debug',
+      levels: { error: 0, warn: 1, pass: 2, info: 3, debug: 4 },
       format: winston.format.combine(
         fixError(),
         winston.format.printf((info) =>
@@ -127,4 +140,6 @@ export default function (service: string): Logger {
       ],
     })
   }
+  logger.pass = (...args: any) => logger.log.apply(logger, [ 'pass' ].concat(args))
+  return logger
 }
