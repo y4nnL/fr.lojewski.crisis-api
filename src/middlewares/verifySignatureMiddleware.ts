@@ -1,25 +1,35 @@
-import assert from 'assert'
+import assert from '@/utils/assert'
 import createLogger from '@/utils/logger'
 import env from '@/utils/env'
 import fs from 'fs'
 import httpSignature from 'http-signature'
 import path from 'path'
+import { ErrorId, UnauthorizedAPIError } from '@/types/error'
 import { RequestHandler } from 'express'
-import { UnauthorizedAPIError } from '@/types/error'
+import { RequestSignature } from 'http-signature'
 
 const verifySignatureLogger = createLogger('verifySignature')
+const verify = (parsed: RequestSignature, pub: string): boolean => {
+  try {
+    return httpSignature.verify(parsed, pub)
+  } catch (e) {
+    return false
+  }
+}
 
 export const verifySignature: RequestHandler = (request, response, next) => {
   try {
     const parsed = httpSignature.parse(request)
-    assert.strictEqual(env.sshKeys.indexOf(parsed.keyId) >= 0, true, 'Unknown keyId')
-    const pub = fs.readFileSync(path.join(env.sshKeysPath, `${ parsed.keyId }.pub`), 'ascii')
-    const isVerified = httpSignature.verify(parsed, pub)
-    assert.strictEqual(isVerified, true, `Request [Signature ${ parsed.keyId }] is not verified`)
-    verifySignatureLogger.info(`Request [Signature ${ parsed.keyId }] is verified `)
+    assert(env.sshKeys.includes(parsed.keyId), new UnauthorizedAPIError(ErrorId.SignatureUnknown))
+    const pubPath = path.join(env.sshKeysPath, `${ parsed.keyId }.pub`)
+    assert(fs.existsSync(pubPath), new UnauthorizedAPIError(ErrorId.SignatureNotFound))
+    const pub = fs.readFileSync(pubPath, 'ascii')
+    const isVerified = verify(parsed, pub)
+    assert(isVerified, new UnauthorizedAPIError(ErrorId.SignatureNotVerified))
+    verifySignatureLogger.pass(`Request [Signature ${ parsed.keyId }] is verified `)
     next()
   } catch (e) {
-    verifySignatureLogger.error(e)
-    next(new UnauthorizedAPIError())
+    verifySignatureLogger.error(e.toString())
+    next(e)
   }
 }

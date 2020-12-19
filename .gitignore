@@ -37,3 +37,6 @@ node_modules
 
 # Coverage files
 coverage
+
+# Test generated files
+__files__*
