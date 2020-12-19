@@ -7,9 +7,9 @@ import { User } from '@/types'
 const authorizeLogger = createLogger('authorize')
 
 export const authorize = (action: User.Action, ...actions: User.Action[]): RequestHandler => {
+  actions = [ action, ...actions ]
   return async (request, response, next) => {
     try {
-      actions = [ action, ...actions ]
       const user = request.user
       assert(user, new UnauthorizedAPIError(ErrorId.UserMandatory))
       const canUserPerform = await Promise.all(actions.map(async (action) => await user.canPerform(action)))

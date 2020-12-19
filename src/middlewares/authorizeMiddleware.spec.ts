@@ -95,4 +95,23 @@ describe('Authorize middleware', () => {
   
   })
   
+  // non-regression tests
+  
+  it('multiple calls should not grow actions array', async () => {
+    let handler: RequestHandler = authorize(User.Action.MonitoringPing)
+    const user: UserDocument = new UserModel({
+      email: 'test',
+      actions: [
+        User.Action.MonitoringPing
+      ],
+    })
+    jest.spyOn(user, 'canPerform')
+    await handler(<Request>{ user }, <Response>{}, next)
+    await handler(<Request>{ user }, <Response>{}, next)
+    await handler(<Request>{ user }, <Response>{}, next)
+    await handler(<Request>{ user }, <Response>{}, next)
+    await handler(<Request>{ user }, <Response>{}, next)
+    expect(user.canPerform).toHaveBeenCalledTimes(5)
+  })
+  
 })
