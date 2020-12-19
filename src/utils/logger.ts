@@ -110,9 +110,8 @@ namespace stringify {
 }
 
 export default function (service: string): Logger {
-  let logger: Logger
   if (env.isProduction) {
-    logger = winston.createLogger({
+    return winston.createLogger({
       level: 'info',
       levels: { error: 0, warn: 1, pass: 2, info: 3, debug: 4 },
       format: winston.format.combine(
@@ -126,7 +125,7 @@ export default function (service: string): Logger {
       ],
     })
   } else {
-    logger = winston.createLogger({
+    return winston.createLogger({
       level: 'debug',
       levels: { error: 0, warn: 1, pass: 2, info: 3, debug: 4 },
       format: winston.format.combine(
@@ -140,6 +139,4 @@ export default function (service: string): Logger {
       ],
     })
   }
-  logger.pass = (...args: any) => logger.log.apply(logger, [ 'pass' ].concat(args))
-  return logger
 }
