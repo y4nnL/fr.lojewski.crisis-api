@@ -5,17 +5,26 @@ import { APIError } from '@/types/error'
 import { format, Logger } from 'winston'
 import { FormatWrap } from 'logform'
 
-function typeOf(object: any): string {
-  let type = Object.prototype.toString.call(object).slice(8, -1).toLowerCase()
-  const name = object?.constructor?.name?.toLowerCase()
-  if (name) {
-    return type === name ? type : 'class'
-  } else {
-    return type
-  }
+type Type =
+    'ARRAY'
+  | 'BOOLEAN'
+  | 'CLASS'
+  | 'DATE'
+  | 'NULL'
+  | 'NUMBER'
+  | 'OBJECT'
+  | 'REGEXP'
+  | 'STRING'
+  | 'SYMBOL'
+  | 'UNDEFINED'
+
+function typeOf(object: any): Type {
+  const type = Object.prototype.toString.call(object).slice(8, -1).toUpperCase()
+  const name = object?.constructor?.name?.toUpperCase()
+  return name ? (type === name ? type : 'CLASS') : type
 }
 
-function getLevelColor(level: string) {
+function level(level: string) {
   switch (level) {
     case 'info':
       return chalk.yellow(level)
@@ -28,62 +37,66 @@ function getLevelColor(level: string) {
   }
 }
 
-const fixError: FormatWrap = format((info) => {
-  const data = <any>info
-  if (data instanceof APIError) {
+const fixError: FormatWrap = format((info: any) => {
+  if (info instanceof APIError) {
     const message = {
-      message: data.message,
-      name: data.name,
-      statusCode: data.statusCode,
+      message: info.message,
+      name: info.name,
+      statusCode: info.statusCode,
     }
-    return Object.assign({ message }, data)
+    return Object.assign({ message }, info)
   }
-  if (data.message instanceof APIError) {
-    const error = data.message
+  if (info.message instanceof APIError) {
+    const error = info.message
     const message = {
       message: error.message,
       name: error.name,
       statusCode: error.statusCode,
     }
-    Object.assign(data, { message })
+    Object.assign(info, { message })
   }
-  return data
+  return info
 })
 
-function stringifyMessage(message: any, whiteSpacesCount = 0, startWithNewLine = true): string {
+function stringify(message: any, whiteSpacesLength = 0, startWithNewline = true): string {
   const type = typeOf(message)
-  const whiteSpaces = whiteSpacesCount ? new Array(whiteSpacesCount).join(' ') + ' ' : ''
-  const whiteSpacesPlus2 = new Array(whiteSpacesCount + 2).join(' ') + ' '
-  if (type === 'string') {
-    return chalk.rgb(106, 135, 89).bgBlack(message)
-  } else if (type === 'number' || type === 'regexp') {
-    return chalk.rgb(104, 151, 187).bgBlack(message)
-  } else if (type === 'boolean' || type === 'null' || type === 'undefined') {
-    return chalk.rgb(204, 120, 50).bgBlack(message)
-  } else if (type === 'symbol' || type === 'date') {
-    return chalk.rgb(152, 118, 170).bgBlack(message)
-  } else if (type === 'object' || type === 'class') {
-    let prefix = type === 'class' ? `(${ message.constructor.name }) ` : ''
-    let stringBuilder: string[] = [ `${ startWithNewLine ? `\n${ whiteSpaces }` : '' }${ prefix }{` ]
-    Object.keys(message).forEach((key) => {
-      stringBuilder.push([
-        `${ whiteSpacesPlus2 }${ chalk.rgb(152, 118, 170).bgBlack(key) }: `,
-        `${ stringifyMessage(message[key], whiteSpacesCount + 2, false) },`,
-      ].join(''))
-    })
-    stringBuilder.push(`${ whiteSpaces }}`)
-    return stringBuilder.join('\n')
-  } else if (type === 'array') {
-    const stringBuilder: string[] = [ `${ startWithNewLine ? `\n${ whiteSpaces }` : '' }[` ]
-    message.forEach((value: any, i: number) => {
-      stringBuilder.push(
-        `${ whiteSpacesPlus2 }[${ i }] ${ stringifyMessage(message[i], whiteSpacesCount + 2, false) },`)
-    })
-    stringBuilder.push(`${ whiteSpaces }]`)
-    return stringBuilder.join('\n')
-  } else {
-    return chalk.white(message)
+  return type in stringify ? stringify[type](message, whiteSpacesLength, startWithNewline) : chalk.white(message)
+}
+
+namespace stringify {
+  
+  export const BOOLEAN = (m: any) => chalk.rgb(204, 120, 50).bgBlack(m)
+  export const CLASS = (m: any, wsl: number, nl: boolean) => stringify.OBJECT(m, wsl, nl)
+  export const DATE = (m: any) => stringify.SYMBOL(m)
+  export const NULL = (m: any) => stringify.BOOLEAN(m)
+  export const NUMBER = (m: any) => chalk.rgb(104, 151, 187).bgBlack(m)
+  export const REGEXP = (m: any) => stringify.NUMBER(m)
+  export const STRING = (m: any) => chalk.rgb(106, 135, 89).bgBlack(m)
+  export const SYMBOL = (m: any) => chalk.rgb(152, 118, 170).bgBlack(m)
+  export const UNDEFINED = (m: any) => stringify.BOOLEAN(m)
+  
+  export const OBJECT = (m: any, wsl: number, nl: boolean) => {
+    const c = typeOf(m) === 'CLASS' ? m.constructor.name : ''
+    if (c === 'ObjectID') return `(ObjectId) { ${ m._id } }`
+    const ws = wsl ? new Array(wsl).join(' ') + ' ' : ''
+    const ws2 = new Array(wsl + 2).join(' ') + ' '
+    const sb = [ `${ nl ? `\n${ ws }` : '' }${ c ? `(${ c }) ` : '' }{` ]
+    Object.keys(m).forEach((key) =>
+      sb.push(`${ ws2 }${ chalk.rgb(152, 118, 170).bgBlack(key) }: ${ stringify(m[key], wsl + 2, false) },`))
+    sb.push(`${ ws }}`)
+    return sb.join('\n')
   }
+  
+  export const ARRAY = (m: any, wsl: number, nl: boolean) => {
+    const ws = wsl ? new Array(wsl).join(' ') + ' ' : ''
+    const ws2 = new Array(wsl + 2).join(' ') + ' '
+    const sb = [ `${ nl ? `\n${ ws }` : '' }[` ]
+    m.forEach((v: any, i: number) =>
+      sb.push(`${ ws2 }[${ i }] ${ stringify(v, wsl + 2, false) },`))
+    sb.push(`${ ws }]`)
+    return sb.join('\n')
+  }
+  
 }
 
 export default function (service: string): Logger {
@@ -105,14 +118,8 @@ export default function (service: string): Logger {
       level: 'debug',
       format: winston.format.combine(
         fixError(),
-        winston.format.printf(info => {
-          return [
-            new Date().toISOString(),
-            `[${ info.service }]`,
-            `${ getLevelColor(info.level) }:`,
-            stringifyMessage(info.message),
-          ].join(' ')
-        }),
+        winston.format.printf((info) =>
+          `${ new Date().toISOString() } [${ info.service }] ${ level(info.level) }: ${ stringify(info.message) }`),
       ),
       defaultMeta: { service },
       transports: [
