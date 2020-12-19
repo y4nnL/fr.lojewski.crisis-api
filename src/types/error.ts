@@ -17,6 +17,13 @@ export class APIError extends Error {
   
 }
 
+export class BadRequestAPIError extends APIError {
+  constructor(errorId: ErrorId[]) {
+    super(httpStatus.BAD_REQUEST, errorId.join(';'))
+    this.name = 'BadRequestAPIError'
+  }
+}
+
 export class UnauthorizedAPIError extends APIError {
   constructor(errorId?: ErrorId) {
     super(httpStatus.UNAUTHORIZED, errorId)
@@ -40,6 +47,11 @@ export class NotFoundAPIError extends APIError {
 }
 
 export enum ErrorId {
-  UnauthorizedAction = 'UnauthorizedAction',
+  __Unknown__ = '__Unknown__',
+  ActionUnauthorized = 'ActionUnauthorized',
+  EmailMalformed = 'EmailMalformed',
+  EmailRequired = 'EmailRequired',
+  PasswordMalformed = 'PasswordMalformed',
+  PasswordRequired = 'PasswordRequired',
   UserMandatory = 'UserMandatory',
 }

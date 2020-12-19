@@ -13,7 +13,7 @@ describe('Authorize middleware', () => {
   beforeEach(() => {
     next = <NextFunction>jest.fn()
     userMandatoryError = new UnauthorizedAPIError(ErrorId.UserMandatory)
-    unauthorizedActionError = new ForbiddenAPIError(ErrorId.UnauthorizedAction)
+    unauthorizedActionError = new ForbiddenAPIError(ErrorId.ActionUnauthorized)
   })
   
   it('should expect a user', async () => {

@@ -13,7 +13,7 @@ export const authorize = (action: User.Action, ...actions: User.Action[]): Reque
       const user = request.user
       assert(user, new UnauthorizedAPIError(ErrorId.UserMandatory))
       const canUserPerform = await Promise.all(actions.map(async (action) => await user.canPerform(action)))
-      assert(canUserPerform.every(action => action), new ForbiddenAPIError(ErrorId.UnauthorizedAction))
+      assert(canUserPerform.every(action => action), new ForbiddenAPIError(ErrorId.ActionUnauthorized))
       authorizeLogger.pass(`${ user } is authorized to perform ${ actions }`)
       next()
     } catch (e) {
