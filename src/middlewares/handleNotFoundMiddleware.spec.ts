@@ -4,7 +4,7 @@ import { NextFunction, Request, Response } from 'express'
 
 describe('handleNotFound middleware', () => {
   
-  it('should next an NotFoundAPIError', async () => {
+  it('should next an NotFoundAPIError', () => {
     let next: NextFunction = <NextFunction>jest.fn()
     handleNotFound(<Request>{}, <Response>{}, next)
     expect(next).toHaveBeenCalledWith(new error.NotFoundAPIError())
