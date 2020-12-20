@@ -1,10 +1,10 @@
 import mongoose from 'mongoose'
 import { Document, Schema } from 'mongoose'
-import { Token } from '@/types'
+import { TokenType } from '@/types/token'
 
 export interface Token {
   token: string
-  type: Token.Type
+  type: TokenType
   userId: string
 }
 
