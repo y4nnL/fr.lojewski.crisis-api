@@ -52,16 +52,6 @@ export type EmailRequestBody = { email: string }
 export type EmailRequestHandler = RequestHandler<{}, {}, EmailRequestBody>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Monitoring
-
-export namespace Monitoring {
-  
-  export type PingResponseBody = { pong: true }
-  export type PingRequestHandler = RequestHandler<{}, PingResponseBody, {}>
-  
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Environment
 
 export interface Env {

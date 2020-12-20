@@ -1,10 +1,10 @@
 import createLogger from '@/utils/logger'
-import { Monitoring} from '@/types'
+import { PingRequestHandler} from '@/types/monitoring'
 import { UnauthorizedAPIError } from '@/types/error'
 
 const monitoringLogger = createLogger('monitoring')
 
-export const ping: Monitoring.PingRequestHandler = async (request, response, next) => {
+export const ping: PingRequestHandler = async (request, response, next) => {
   if (!request.user) {
     return next(new UnauthorizedAPIError())
   }
