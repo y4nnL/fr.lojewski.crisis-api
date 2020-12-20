@@ -1,16 +1,14 @@
 import mongoose from 'mongoose'
 import { Document, Schema } from 'mongoose'
-import { TokenType } from '@/types'
+import { SchemaClass, SchemaDefinition, TokenType } from '@/types'
 
-export interface Token {
+type Token = {
   token: string
   type: TokenType
   userId: string
 }
 
-export type TokenDocument = Token & Document
-
-export const tokenSchema = new Schema({
+const tokenDefinition: SchemaDefinition<Token> = {
   token: {
     type: Schema.Types.String,
     required: true,
@@ -23,6 +21,15 @@ export const tokenSchema = new Schema({
     type: Schema.Types.ObjectId,
     required: true,
   },
-})
+}
 
-export const TokenModel = mongoose.model<TokenDocument>('Token', tokenSchema)
+type TokenDocument = Token & Document
+
+const tokenSchema = new SchemaClass(tokenDefinition)
+const TokenModel = mongoose.model<TokenDocument>('Token', tokenSchema)
+
+export {
+  Token,
+  TokenDocument,
+  TokenModel,
+}

@@ -1,3 +1,4 @@
+import * as mongoose from 'mongoose'
 import { RequestHandler } from 'express'
 import { UserDocument } from '@/models/User'
 
@@ -17,6 +18,28 @@ declare global {
       isErrorHandled?: boolean
     }
     
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Mongoose helpers
+
+export type SchemaDefinition<T> = mongoose.SchemaDefinition &
+  Record<keyof T,
+    mongoose.SchemaTypeOptions<any>
+    | Function
+    | string
+    | mongoose.Schema
+    | mongoose.Schema[]
+    | Array<mongoose.SchemaTypeOptions<any>>
+    | Function[]
+    | mongoose.SchemaDefinition
+    | mongoose.SchemaDefinition[]>
+export class SchemaClass<T> extends mongoose.Schema {
+  methods: T
+  constructor(definition?: mongoose.SchemaDefinition, methods?: T, options?: mongoose.SchemaOptions) {
+    super(definition, options)
+    this.methods = methods
   }
 }
 
@@ -78,5 +101,5 @@ export {
 } from '@/types/token'
 
 export {
-  UserAction
+  UserAction,
 } from '@/types/user'
