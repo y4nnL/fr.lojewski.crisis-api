@@ -10,26 +10,20 @@ export enum TokenType {
   Authorization = 'authorization'
 }
 
-export namespace authorization {
-  
-  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  // Request handlers
-  
-  export type CreateRequestBody = { email: string, password: string }
-  export type CreateResponseBody = { token: string }
-  export type CreateRequestHandler = RequestHandler<{}, CreateResponseBody, CreateRequestBody>
-  
-  export type DeleteResponseBody = { success: true }
-  export type DeleteRequestHandler = RequestHandler<{}, DeleteResponseBody, {}>
-  
-  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  // Validations
-  
-  export const createValidation = {
-    body: Joi.object({
-      email: joiRequiredEmail,
-      password: joiRequiredPassword,
-    }),
-  }
-  
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Request handlers
+
+export type AuthorizationCreateRequestBody = { email: string, password: string }
+export type AuthorizationCreateResponseBody = { token: string }
+export type AuthorizationCreateRequestHandler =
+  RequestHandler<{}, AuthorizationCreateResponseBody, AuthorizationCreateRequestBody>
+
+export type AuthorizationDeleteResponseBody = { success: true }
+export type AuthorizationDeleteRequestHandler = RequestHandler<{}, AuthorizationDeleteResponseBody, {}>
+
+export const authorizationCreateValidation = {
+  body: Joi.object({
+    email: joiRequiredEmail,
+    password: joiRequiredPassword,
+  }),
 }

@@ -67,7 +67,12 @@ export {
 } from '@/types/monitoring'
 
 export {
-  authorization,
+  AuthorizationCreateRequestBody,
+  AuthorizationCreateRequestHandler,
+  AuthorizationCreateResponseBody,
+  authorizationCreateValidation,
+  AuthorizationDeleteRequestHandler,
+  AuthorizationDeleteResponseBody,
   TokenDuration,
   TokenType,
 } from '@/types/token'

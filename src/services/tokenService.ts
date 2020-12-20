@@ -2,13 +2,14 @@ import assert from 'assert'
 import createLogger from '@/utils/logger'
 import env from '@/utils/env'
 import jwt from 'jsonwebtoken'
-import * as uuid from 'uuid'
-import { authorization, TokenType, TokenDuration, UnauthorizedAPIError } from '@/types'
+import * as token from '@/types/token'
 import { TokenModel } from '@/models/Token'
+import { UnauthorizedAPIError } from '@/types'
+import { v4 as uuidV4 } from 'uuid'
 
 const tokenLogger = createLogger('token')
 
-export const createAuthorizationToken: authorization.CreateRequestHandler = async (request, response, next) => {
+export const createAuthorizationToken: token.AuthorizationCreateRequestHandler = async (request, response, next) => {
   if (!request.user) {
     return next(new UnauthorizedAPIError())
   }
@@ -17,12 +18,12 @@ export const createAuthorizationToken: authorization.CreateRequestHandler = asyn
     const hasPasswordMatched = await user.matchPassword(request.body.password)
     assert.strictEqual(hasPasswordMatched, true, 'Password mismatch')
     const authToken = await TokenModel.create({
-      type: TokenType.Authorization,
-      token: uuid.v4(),
+      type: token.TokenType.Authorization,
+      token: uuidV4(),
       userId: user._id,
     })
     tokenLogger.info(`${ user } successfully created an authorization token`)
-    const signOptions = { expiresIn: TokenDuration.Authorization }
+    const signOptions = { expiresIn: token.TokenDuration.Authorization }
     const signedToken = jwt.sign({ token: authToken.token }, env.jwtSecret, signOptions)
     response.json({ token: signedToken })
   } catch (e) {
@@ -31,7 +32,7 @@ export const createAuthorizationToken: authorization.CreateRequestHandler = asyn
   }
 }
 
-export const deleteAuthorizationToken: authorization.DeleteRequestHandler = async (request, response, next) => {
+export const deleteAuthorizationToken: token.AuthorizationDeleteRequestHandler = async (request, response, next) => {
   if (!request.user) {
     return next(new UnauthorizedAPIError())
   }
