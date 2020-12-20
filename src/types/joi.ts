@@ -1,4 +1,4 @@
-import { ErrorId } from '@/types/error'
+import { ErrorId } from '@/types'
 import { Joi } from 'express-validation'
 
 export const joiRequiredEmail =

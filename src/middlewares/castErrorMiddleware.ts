@@ -1,5 +1,5 @@
 import httpStatus from 'http-status'
-import { APIError, BadRequestAPIError, ErrorId } from '@/types/error'
+import { APIError, BadRequestAPIError, ErrorId } from '@/types'
 import { ErrorRequestHandler } from 'express'
 import { ValidationError } from 'express-validation'
 

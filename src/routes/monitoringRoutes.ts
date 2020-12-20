@@ -1,7 +1,7 @@
 import express from 'express'
 import * as middleware from '@/middlewares'
 import * as monitoringService from '@/services/monitoringService'
-import { UserAction } from '@/types/user'
+import { UserAction } from '@/types'
 
 const router = express.Router()
 

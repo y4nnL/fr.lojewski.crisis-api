@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
 import { Document, Schema } from 'mongoose'
-import { TokenType } from '@/types/token'
+import { TokenType } from '@/types'
 
 export interface Token {
   token: string

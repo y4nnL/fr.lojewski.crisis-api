@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt'
 import mongoose from 'mongoose'
 import { Document, Schema } from 'mongoose'
-import { UserAction } from '@/types/user'
+import { UserAction } from '@/types'
 
 export interface User {
   actions: UserAction[]

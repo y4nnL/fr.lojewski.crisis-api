@@ -1,7 +1,7 @@
 import chalk from 'chalk'
 import env from '@/utils/env'
 import winston from 'winston'
-import { APIError } from '@/types/error'
+import { APIError } from '@/types'
 import { format, LeveledLogMethod, Logger } from 'winston'
 import { FormatWrap } from 'logform'
 

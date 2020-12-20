@@ -1,6 +1,5 @@
 import * as error from '@/types/error'
 import { castError } from './castErrorMiddleware'
-import { ErrorId } from '@/types/error'
 import { NextFunction, Request, Response } from 'express'
 
 const ValidationError = require('express-validation/lib/validation-error')
@@ -60,7 +59,7 @@ describe('castError middleware', () => {
       error.ErrorId.EmailMalformed,
     ]))
     expect(next).not.toHaveBeenCalledWith(
-      expect.objectContaining({ message: expect.stringContaining(ErrorId.__Unknown__) }))
+      expect.objectContaining({ message: expect.stringContaining(error.ErrorId.__Unknown__) }))
   })
   
   it('should cast invalid express-validation ValidationError to APIError', () => {

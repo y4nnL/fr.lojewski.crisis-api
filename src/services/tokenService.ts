@@ -3,9 +3,8 @@ import createLogger from '@/utils/logger'
 import env from '@/utils/env'
 import jwt from 'jsonwebtoken'
 import * as uuid from 'uuid'
-import { authorization, TokenType, TokenDuration } from '@/types/token'
+import { authorization, TokenType, TokenDuration, UnauthorizedAPIError } from '@/types'
 import { TokenModel } from '@/models/Token'
-import { UnauthorizedAPIError } from '@/types/error'
 
 const tokenLogger = createLogger('token')
 

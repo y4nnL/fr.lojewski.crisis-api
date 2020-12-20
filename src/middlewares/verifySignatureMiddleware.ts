@@ -4,7 +4,7 @@ import env from '@/utils/env'
 import fs from 'fs'
 import httpSignature from 'http-signature'
 import path from 'path'
-import { ErrorId, UnauthorizedAPIError } from '@/types/error'
+import { ErrorId, UnauthorizedAPIError } from '@/types'
 import { RequestHandler } from 'express'
 import { RequestSignature } from 'http-signature'
 

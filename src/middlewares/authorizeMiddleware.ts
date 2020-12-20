@@ -1,8 +1,7 @@
 import assert from '@/utils/assert'
 import createLogger from '@/utils/logger'
-import { ErrorId, ForbiddenAPIError, UnauthorizedAPIError } from '@/types/error'
+import { ErrorId, ForbiddenAPIError, UnauthorizedAPIError, UserAction } from '@/types'
 import { RequestHandler } from 'express'
-import { UserAction } from '@/types/user'
 
 const authorizeLogger = createLogger('authorize')
 

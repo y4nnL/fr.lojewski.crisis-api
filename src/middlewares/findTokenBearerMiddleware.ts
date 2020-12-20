@@ -4,8 +4,7 @@ import env from '@/utils/env'
 import jwt from 'jsonwebtoken'
 import { RequestHandler } from 'express'
 import { TokenDocument, TokenModel } from '@/models/Token'
-import { TokenType, TokenDuration } from '@/types/token'
-import { UnauthorizedAPIError } from '@/types/error'
+import { TokenType, TokenDuration, UnauthorizedAPIError } from '@/types'
 import { UserModel } from '@/models/User'
 
 const findTokenBearerLogger = createLogger('findTokenBearer')

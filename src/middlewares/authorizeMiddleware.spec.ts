@@ -1,7 +1,6 @@
 import { authorize } from './authorizeMiddleware'
-import { ErrorId, ForbiddenAPIError, UnauthorizedAPIError } from '@/types/error'
+import { ErrorId, ForbiddenAPIError, UnauthorizedAPIError, UserAction } from '@/types'
 import { NextFunction, Request, RequestHandler, Response } from 'express'
-import { UserAction } from '@/types/user'
 import { UserDocument, UserModel } from '@/models/User'
 
 describe('Authorize middleware', () => {
