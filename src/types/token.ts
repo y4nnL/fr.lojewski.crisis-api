@@ -1,5 +1,5 @@
 import { Joi } from 'express-validation'
-import { joiRequiredEmail, joiRequiredPassword } from '@/types/index'
+import { joiRequiredEmail, joiRequiredPassword } from '@/types/joi'
 import { RequestHandler } from 'express'
 
 export enum TokenDuration {
