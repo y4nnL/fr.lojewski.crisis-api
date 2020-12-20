@@ -2,11 +2,11 @@ import assert from '@/utils/assert'
 import createLogger from '@/utils/logger'
 import { ErrorId, ForbiddenAPIError, UnauthorizedAPIError } from '@/types/error'
 import { RequestHandler } from 'express'
-import { User } from '@/types'
+import { UserAction } from '@/types/user'
 
 const authorizeLogger = createLogger('authorize')
 
-export const authorize = (action: User.Action, ...actions: User.Action[]): RequestHandler => {
+export const authorize = (action: UserAction, ...actions: UserAction[]): RequestHandler => {
   actions = [ action, ...actions ]
   return async (request, response, next) => {
     try {

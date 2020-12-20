@@ -1,15 +1,15 @@
 import bcrypt from 'bcrypt'
 import mongoose from 'mongoose'
 import { Document, Schema } from 'mongoose'
-import { User } from '@/types'
+import { UserAction } from '@/types/user'
 
 export interface User {
-  actions: User.Action[]
+  actions: UserAction[]
   email: string
   isDisabled: boolean
   isValidated: boolean
   password: string
-  canPerform(action: User.Action): Promise<boolean>
+  canPerform(action: UserAction): Promise<boolean>
   matchPassword(password: string): Promise<boolean>
   toString(): string
 }
@@ -37,7 +37,7 @@ export const userSchema: Schema = new Schema({
   },
 })
 
-userSchema.methods.canPerform = async function (action: User.Action): Promise<boolean> {
+userSchema.methods.canPerform = async function (action: UserAction): Promise<boolean> {
   return this.actions.indexOf(action) >= 0
 }
 

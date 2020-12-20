@@ -1,7 +1,7 @@
 import { authorize } from './authorizeMiddleware'
 import { ErrorId, ForbiddenAPIError, UnauthorizedAPIError } from '@/types/error'
 import { NextFunction, Request, RequestHandler, Response } from 'express'
-import { User } from '@/types'
+import { UserAction } from '@/types/user'
 import { UserDocument, UserModel } from '@/models/User'
 
 describe('Authorize middleware', () => {
@@ -17,7 +17,7 @@ describe('Authorize middleware', () => {
   })
   
   it('should expect a user', async () => {
-    const handler = authorize(User.Action.MonitoringPing)
+    const handler = authorize(UserAction.MonitoringPing)
     await handler(<Request>{}, <Response>{}, next)
     expect(next).toHaveBeenCalledWith(userMandatoryError)
     expect(next).toHaveBeenCalledWith(expect.objectContaining({ message: userMandatoryError.message }))
@@ -28,14 +28,14 @@ describe('Authorize middleware', () => {
     let handler: RequestHandler
     
     beforeEach(() => {
-      handler = authorize(User.Action.MonitoringPing)
+      handler = authorize(UserAction.MonitoringPing)
     })
     
     it('should not authorize a user', async () => {
       const user: UserDocument = new UserModel({
         email: 'test',
         actions: [
-          User.Action.TokenAuthorizationCreate
+          UserAction.TokenAuthorizationCreate
         ],
       })
       await handler(<Request>{ user }, <Response>{}, next)
@@ -47,7 +47,7 @@ describe('Authorize middleware', () => {
       const user: UserDocument = new UserModel({
         email: 'test',
         actions: [
-          User.Action.MonitoringPing
+          UserAction.MonitoringPing
         ],
       })
       await handler(<Request>{ user }, <Response>{}, next)
@@ -62,9 +62,9 @@ describe('Authorize middleware', () => {
     
     beforeEach(() => {
       handler = authorize(
-        User.Action.MonitoringPing,
-        User.Action.TokenAuthorizationCreate,
-        User.Action.TokenAuthorizationDelete,
+        UserAction.MonitoringPing,
+        UserAction.TokenAuthorizationCreate,
+        UserAction.TokenAuthorizationDelete,
       )
     })
     
@@ -72,7 +72,7 @@ describe('Authorize middleware', () => {
       const user: UserDocument = new UserModel({
         email: 'test',
         actions: [
-          User.Action.MonitoringPing
+          UserAction.MonitoringPing
         ],
       })
       await handler(<Request>{ user }, <Response>{}, next)
@@ -84,9 +84,9 @@ describe('Authorize middleware', () => {
       const user: UserDocument = new UserModel({
         email: 'test',
         actions: [
-          User.Action.MonitoringPing,
-          User.Action.TokenAuthorizationCreate,
-          User.Action.TokenAuthorizationDelete,
+          UserAction.MonitoringPing,
+          UserAction.TokenAuthorizationCreate,
+          UserAction.TokenAuthorizationDelete,
         ],
       })
       await handler(<Request>{ user }, <Response>{}, next)
@@ -98,11 +98,11 @@ describe('Authorize middleware', () => {
   // non-regression tests
   
   it('multiple calls should not grow actions array', async () => {
-    let handler: RequestHandler = authorize(User.Action.MonitoringPing)
+    let handler: RequestHandler = authorize(UserAction.MonitoringPing)
     const user: UserDocument = new UserModel({
       email: 'test',
       actions: [
-        User.Action.MonitoringPing
+        UserAction.MonitoringPing
       ],
     })
     jest.spyOn(user, 'canPerform')
