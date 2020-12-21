@@ -58,7 +58,7 @@ describe('findUserByEmail middleware', () => {
     await findUserByEmail(request, <Response>{}, next)
     expect(next).toHaveBeenCalledWith()
     expect(request.user).toBeInstanceOf(UserModel)
-    expect(request.user.email).toStrictEqual(email)
+    expect(request.user?.email).toStrictEqual(email)
   })
   
 })

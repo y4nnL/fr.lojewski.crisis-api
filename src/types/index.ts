@@ -1,9 +1,10 @@
 import * as mongoose from 'mongoose'
 import { RequestHandler } from 'express'
 import { UserDocument } from '@/models/User'
+import { Secret, VerifyOptions } from 'jsonwebtoken'
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Express augmentation
+// Augmentations
 
 declare global {
   
@@ -19,6 +20,10 @@ declare global {
     }
     
   }
+}
+
+declare module 'jsonwebtoken' {
+  export function verify<T>(token: string, secretOrPublicKey: Secret, options?: VerifyOptions): T;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

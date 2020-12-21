@@ -8,7 +8,7 @@ const ErrorIdValues = Object.values(ErrorId)
 export const castError: ErrorRequestHandler = (error: any, request, response, next) => {
   if (error instanceof ValidationError) {
     const errorId: ErrorId[] = []
-    error.details.body.forEach((body) => errorId.push(
+    error.details.body?.forEach((body) => errorId.push(
       ErrorIdValues.includes(<ErrorId>body.message) ? <ErrorId>body.message : ErrorId.__Unknown__))
     error = new BadRequestAPIError(errorId)
     error.stack = ''

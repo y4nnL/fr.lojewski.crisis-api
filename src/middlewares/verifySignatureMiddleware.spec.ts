@@ -24,22 +24,22 @@ describe('verifySignature middleware', () => {
   // Good RSA key-pair
   let rsa1: RSA = {
     id: 'rsa1',
-    key: path.join(process.env.SSH_KEYS_PATH, 'rsa1'),
-    pub: path.join(process.env.SSH_KEYS_PATH, 'rsa1.pub'),
+    key: path.join(env.sshKeysPath, 'rsa1'),
+    pub: path.join(env.sshKeysPath, 'rsa1.pub'),
     pwd: 'rsa1@test.com'
   }
   // Missing RSA pub
   let rsa2: RSA = {
     id: 'rsa2',
-    key: path.join(process.env.SSH_KEYS_PATH, 'rsa2'),
-    pub: path.join(process.env.SSH_KEYS_PATH, 'rsa2.pub'),
+    key: path.join(env.sshKeysPath, 'rsa2'),
+    pub: path.join(env.sshKeysPath, 'rsa2.pub'),
     pwd: 'rsa2@test.com'
   }
   // Malformed RSA pub
   let rsa3: RSA = {
     id: 'rsa3',
-    key: path.join(process.env.SSH_KEYS_PATH, 'rsa3'),
-    pub: path.join(process.env.SSH_KEYS_PATH, 'rsa3.pub'),
+    key: path.join(env.sshKeysPath, 'rsa3'),
+    pub: path.join(env.sshKeysPath, 'rsa3.pub'),
     pwd: 'rsa3@test.com'
   }
   

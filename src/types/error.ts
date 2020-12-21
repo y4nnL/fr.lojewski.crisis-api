@@ -49,6 +49,8 @@ export class NotFoundAPIError extends APIError {
 export enum ErrorId {
   __Unknown__ = '__Unknown__',
   ActionUnauthorized = 'ActionUnauthorized',
+  AuthorizationMalformed = 'AuthorizationMalformed',
+  AuthorizationNotFound = 'AuthorizationNotFound',
   EmailMalformed = 'EmailMalformed',
   EmailRequired = 'EmailRequired',
   PasswordMalformed = 'PasswordMalformed',

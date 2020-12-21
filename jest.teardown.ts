@@ -1,6 +1,7 @@
 import rimraf from 'rimraf'
 import { MongoMemoryServer } from 'mongodb-memory-server'
 
+// TODO <low> find another place for this
 declare global {
   namespace NodeJS {
     interface Global {
@@ -11,5 +12,7 @@ declare global {
 
 export default async () => {
   await global.mongo.stop()
-  rimraf.sync(process.env.SSH_KEYS_PATH)
+  if (process.env.SSH_KEYS_PATH) {
+    rimraf.sync(process.env.SSH_KEYS_PATH)
+  }
 }

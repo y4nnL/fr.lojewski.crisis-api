@@ -4,6 +4,7 @@ import path from 'path'
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { v4 as uuidV4 } from 'uuid'
 
+// TODO <low> find another place for this
 declare global {
   namespace NodeJS {
     interface Global {

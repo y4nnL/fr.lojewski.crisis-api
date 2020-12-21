@@ -38,10 +38,10 @@ const userDefinition: SchemaDefinition<User> = {
 
 const userMethods: UserMethods = {
   canPerform(action: UserAction): boolean {
-    return this.actions.indexOf(action) >= 0
+    return this.actions ? this.actions.indexOf(action) >= 0 : false
   },
   async matchPassword(password: string): Promise<boolean> {
-    return await bcrypt.compare(password, this.password)
+    return this.password ? await bcrypt.compare(password, this.password) : false
   },
   toString(): string {
     return `[User ${ this.email }]`
