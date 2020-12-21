@@ -4,11 +4,11 @@ import { Document, Schema } from 'mongoose'
 import { SchemaDefinition, SchemaClass, UserAction } from '@/types'
 
 type User = {
-  actions: UserAction[]
+  actions?: UserAction[]
   email: string
-  isDisabled: boolean
-  isValidated: boolean
-  password: string
+  isDisabled?: boolean
+  isValidated?: boolean
+  password?: string
 }
 
 type UserMethods = {

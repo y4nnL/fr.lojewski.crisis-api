@@ -5,16 +5,25 @@ import nodeAssert from 'assert'
  * We do want our error instances to be thrown instead
  */
 
-function assert(value: any, error: Error): asserts value {
+const _try = (fn: Function, error: Error) => {
   try {
-    nodeAssert(value)
+    fn()
   } catch (e) {
     throw error
   }
 }
 
+function assert(value: any, error: Error): asserts value {
+  _try(() => nodeAssert(value), error)
+}
+
 namespace assert {
-  export const ok = (value: any, error: Error): asserts value => assert(value, error)
+  export function ok(value: any, error: Error): asserts value {
+    assert(value, error)
+  }
+  export function strictEqual<T>(value: any, match: T, error: Error): asserts value is T {
+    _try(() => nodeAssert.strictEqual(value, match), error)
+  }
 }
 
 export default assert
