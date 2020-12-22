@@ -105,13 +105,13 @@ describe('Authorize middleware', () => {
         UserAction.MonitoringPing
       ],
     })
-    jest.spyOn(userService, 'canPerform')
+    const canUserPerformSpy = jest.spyOn(userService, 'canUserPerform')
     await handler(<Request>{ user }, <Response>{}, next)
     await handler(<Request>{ user }, <Response>{}, next)
     await handler(<Request>{ user }, <Response>{}, next)
     await handler(<Request>{ user }, <Response>{}, next)
     await handler(<Request>{ user }, <Response>{}, next)
-    expect(userService.canPerform).toHaveBeenCalledTimes(5)
+    expect(canUserPerformSpy).toHaveBeenCalledTimes(5)
   })
   
 })

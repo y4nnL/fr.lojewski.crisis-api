@@ -4,7 +4,7 @@ import env from '@/utils/env'
 import jwt from 'jsonwebtoken'
 import nodeAssert from 'assert'
 import * as token from '@/types/token'
-import { isPasswordValid } from '@/services/userService'
+import { isUserPasswordValid } from '@/services/userService'
 import { Token, TokenDocument, TokenModel } from '@/models'
 import { TokenDuration, UnauthorizedAPIError } from '@/types'
 import { v4 as uuidV4 } from 'uuid'
@@ -36,7 +36,7 @@ export const createAuthorizationToken: token.AuthorizationCreateRequestHandler =
   }
   const user = request.user
   try {
-    const hasPasswordMatched = await isPasswordValid(user, request.body.password)
+    const hasPasswordMatched = await isUserPasswordValid(user, request.body.password)
     nodeAssert.strictEqual(hasPasswordMatched, true, 'Password mismatch')
     const authorizationToken = await TokenModel.create({
       type: token.TokenType.Authorization,
