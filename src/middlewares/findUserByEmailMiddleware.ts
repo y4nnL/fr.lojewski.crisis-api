@@ -7,11 +7,12 @@ export const findUserByEmailLogger = createLogger('findUserByEmail')
 
 export const findUserByEmail: EmailRequestHandler = async (request, response, next) => {
   try {
-    assert.isString(request.body?.email, new BadRequestAPIError([ ErrorId.EmailRequired ]))
-    const user = await UserModel.findOne({ email: request.body.email }).exec()
-    assert.strictEqual(user?.email, request.body.email, new NotFoundAPIError())
-    request.user = user
-    findUserByEmailLogger.pass(`Found ${ user }`)
+    const email = request.body?.email
+    assert.isString(email, new BadRequestAPIError([ ErrorId.EmailRequired ]))
+    const userDocument = await UserModel.findOne({ email }).exec()
+    assert(userDocument, new NotFoundAPIError())
+    request.user = userDocument
+    findUserByEmailLogger.pass(`Request user has been set to ${ userDocument }`)
     next()
   } catch (e) {
     findUserByEmailLogger.error(e)

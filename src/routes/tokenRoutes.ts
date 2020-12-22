@@ -14,7 +14,7 @@ router.route('/authorization')
     tokenService.createAuthorizationToken,
   )
   .delete(
-    middleware.findTokenBearer,
+    middleware.findUserByToken,
     middleware.authorize(UserAction.TokenAuthorizationDelete),
     tokenService.deleteAuthorizationToken,
   )

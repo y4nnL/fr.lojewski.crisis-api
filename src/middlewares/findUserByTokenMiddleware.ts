@@ -5,9 +5,9 @@ import { decodeToken } from '@/services/tokenService'
 import { RequestHandler } from 'express'
 import { TokenModel } from '@/models/Token'
 
-export const findTokenBearerLogger = createLogger('findTokenBearer')
+export const findUserByTokenLogger = createLogger('findUserByToken')
 
-export const findTokenBearer: RequestHandler = async (request, response, next) => {
+export const findUserByToken: RequestHandler = async (request, response, next) => {
   try {
     let authorization = request.get('X-Authorization')
     assert(authorization, new BadRequestAPIError([ ErrorId.AuthorizationNotFound ]))
@@ -19,10 +19,10 @@ export const findTokenBearer: RequestHandler = async (request, response, next) =
     const userDocument = await tokenDocument.getUser()
     assert(userDocument, new UnauthorizedAPIError(ErrorId.UserMandatory))
     request.user = userDocument
-    findTokenBearerLogger.pass(`Token bearer ${ userDocument } has been found`)
+    findUserByTokenLogger.pass(`${ userDocument } has been found`)
     next()
   } catch (e) {
-    findTokenBearerLogger.error(e)
+    findUserByTokenLogger.error(e)
     next(new UnauthorizedAPIError())
   }
 }

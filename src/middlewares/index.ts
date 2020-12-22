@@ -1,7 +1,7 @@
 export { authorize } from '@/middlewares/authorizeMiddleware'
 export { castError } from '@/middlewares/castErrorMiddleware'
-export { findTokenBearer } from '@/middlewares/findTokenBearerMiddleware'
 export { findUserByEmail } from '@/middlewares/findUserByEmailMiddleware'
+export { findUserByToken } from '@/middlewares/findUserByTokenMiddleware'
 export { handleError } from '@/middlewares/handleErrorMiddleware'
 export { handleNotFound } from '@/middlewares/handleNotFoundMiddleware'
 export { log } from '@/middlewares/logMiddleware'

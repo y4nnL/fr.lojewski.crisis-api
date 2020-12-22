@@ -7,7 +7,7 @@ const router = express.Router()
 
 router.route('/ping')
   .post(
-    middleware.findTokenBearer,
+    middleware.findUserByToken,
     middleware.authorize(UserAction.MonitoringPing),
     monitoringService.ping,
   )
