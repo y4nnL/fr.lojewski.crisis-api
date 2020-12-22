@@ -39,7 +39,6 @@ describe('handleNotFound middleware', () => {
     expect(response.statusCode).toStrictEqual(404)
     expect(jsonSpy).toHaveBeenCalledWith({ message: error.message })
     expect(jsonSpy).not.toHaveBeenCalledWith({ stack: error.stack })
-    // @ts-ignore
     expect(response.isErrorHandled).toStrictEqual(true)
   })
   
