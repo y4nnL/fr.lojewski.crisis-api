@@ -8,6 +8,7 @@ assert(process.env.NODE_ENV, new Error('NODE_ENV environment variable not found'
 assert(process.env.PATH_CERT, new Error('PATH_CERT environment variable not found'))
 assert(process.env.PATH_CERT_CA, new Error('PATH_CERT_CA environment variable not found'))
 assert(process.env.PATH_CERT_KEY, new Error('PATH_CERT_KEY environment variable not found'))
+assert(process.env.SERVER_PORT, new Error('SERVER_PORT environment variable not found'))
 assert(process.env.SSH_KEYS, new Error('SSH_KEYS environment variable not found'))
 assert(process.env.SSH_KEYS_PATH, new Error('SSH_KEYS_PATH environment variable not found'))
 
