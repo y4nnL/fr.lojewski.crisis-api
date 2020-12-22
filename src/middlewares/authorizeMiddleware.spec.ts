@@ -2,6 +2,7 @@ import { authorize } from './authorizeMiddleware'
 import { ErrorId, ForbiddenAPIError, UnauthorizedAPIError, UserAction } from '@/types'
 import { NextFunction, Request, RequestHandler, Response } from 'express'
 import { UserDocument, UserModel } from '@/models/User'
+import { userService } from '@/services'
 
 describe('Authorize middleware', () => {
   
@@ -104,13 +105,13 @@ describe('Authorize middleware', () => {
         UserAction.MonitoringPing
       ],
     })
-    jest.spyOn(user, 'canPerform')
+    jest.spyOn(userService, 'canPerform')
     await handler(<Request>{ user }, <Response>{}, next)
     await handler(<Request>{ user }, <Response>{}, next)
     await handler(<Request>{ user }, <Response>{}, next)
     await handler(<Request>{ user }, <Response>{}, next)
     await handler(<Request>{ user }, <Response>{}, next)
-    expect(user.canPerform).toHaveBeenCalledTimes(5)
+    expect(userService.canPerform).toHaveBeenCalledTimes(5)
   })
   
 })

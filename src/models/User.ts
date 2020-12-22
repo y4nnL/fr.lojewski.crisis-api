@@ -1,4 +1,3 @@
-import bcrypt from 'bcrypt'
 import mongoose from 'mongoose'
 import { Document, Schema } from 'mongoose'
 import { SchemaDefinition, SchemaClass, UserAction } from '@/types'
@@ -12,8 +11,6 @@ type User = {
 }
 
 type UserMethods = {
-  canPerform(this: User, action: UserAction): boolean
-  matchPassword(this: User, password: string): Promise<boolean>
   toString(this: User,): string
 }
 
@@ -37,12 +34,6 @@ const userDefinition: SchemaDefinition<User> = {
 }
 
 const userMethods: UserMethods = {
-  canPerform(action: UserAction): boolean {
-    return this.actions ? this.actions.indexOf(action) >= 0 : false
-  },
-  async matchPassword(password: string): Promise<boolean> {
-    return this.password ? await bcrypt.compare(password, this.password) : false
-  },
   toString(): string {
     return `[User ${ this.email }]`
   },
