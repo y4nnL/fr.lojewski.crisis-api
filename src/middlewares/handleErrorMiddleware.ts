@@ -3,11 +3,11 @@ import env from '@/utils/env'
 import { APIError } from '@/types'
 import { ErrorRequestHandler } from 'express'
 
-const handleErrorLogger = createLogger('handleError')
+export const handleErrorLogger = createLogger('handleError')
 
 export const handleError: ErrorRequestHandler = (error: APIError, request, response, next) => {
   const json: any = { message: error.message }
-  handleErrorLogger.error(`Finished ${ request.method } ${ request.url } ${ error }`)
+  handleErrorLogger.error(`Finished ${ request.method } ${ request.originalUrl } ${ error }`)
   if (error.stack) {
     handleErrorLogger.error(error.stack)
     if (!env.isProduction) {
