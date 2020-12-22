@@ -1,8 +1,8 @@
 import { BadRequestAPIError, ErrorId, NotFoundAPIError, UnauthorizedAPIError } from '@/types'
-import { connectDB } from '@/core/db'
+import { connect, disconnect } from '@/core/db'
 import { findUserByEmail, findUserByEmailLogger } from './findUserByEmailMiddleware'
 import { NextFunction, Request, Response } from 'express'
-import { UserDocument, UserModel } from '@/models/User'
+import { User, UserDocument, UserModel } from '@/models/User'
 
 describe('findUserByEmail middleware', () => {
   
@@ -11,8 +11,12 @@ describe('findUserByEmail middleware', () => {
   const unauthorized = new UnauthorizedAPIError()
   
   beforeAll(async () => {
-    await connectDB()
-    await UserModel.create({ email } as UserDocument)
+    await connect()
+    await UserModel.create({ email } as User as UserDocument)
+  })
+  
+  afterAll(async () => {
+    await disconnect()
   })
   
   beforeEach(() => {
@@ -20,7 +24,7 @@ describe('findUserByEmail middleware', () => {
     jest.resetAllMocks()
   })
   
-  it('should throw on empty request or body', async () => {
+  it('should throw on empty body', async () => {
     await findUserByEmail(<Request>{}, <Response>{}, next)
     expect(next).toHaveBeenCalledWith(unauthorized)
     await findUserByEmail(<Request>{ body: null }, <Response>{}, next)

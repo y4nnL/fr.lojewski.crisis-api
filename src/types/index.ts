@@ -1,7 +1,6 @@
 import * as mongoose from 'mongoose'
 import { RequestHandler } from 'express'
 import { UserDocument } from '@/models/User'
-import { Secret, VerifyOptions } from 'jsonwebtoken'
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Augmentations
@@ -22,16 +21,12 @@ declare global {
   }
 }
 
-declare module 'jsonwebtoken' {
-  export function verify<T>(token: string, secretOrPublicKey: Secret, options?: VerifyOptions): T;
-}
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Mongoose helpers
 
 export type SchemaDefinition<T> = mongoose.SchemaDefinition &
   Record<keyof T,
-    mongoose.SchemaTypeOptions<any>
+      mongoose.SchemaTypeOptions<any>
     | Function
     | string
     | mongoose.Schema

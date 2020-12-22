@@ -4,11 +4,11 @@ require('module-alias/register')
 // Environment variables check
 require('./utils/env')
 
-import { connectDB } from '@/core/db'
+import { connect } from '@/core/db'
 import { startServer } from '@/core/server'
 
 (async function () {
-  const isDBConnected = await connectDB()
+  const isDBConnected = await connect()
   if (isDBConnected) {
     startServer()
   }

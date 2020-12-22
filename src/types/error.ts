@@ -12,7 +12,8 @@ export class APIError extends Error {
   }
   
   toString(): string {
-    return `[${ this.name } (${ this.statusCode }): ${ this.message }]`
+    const message = this.message ? ': ' + this.message : ''
+    return `[${ this.name } (${ this.statusCode })${ message }]`
   }
   
 }

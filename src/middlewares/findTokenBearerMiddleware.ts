@@ -1,34 +1,25 @@
-import assert from 'assert'
+import assert from '@/utils/assert'
 import createLogger from '@/utils/logger'
-import env from '@/utils/env'
-import jwt from 'jsonwebtoken'
+import { BadRequestAPIError, ErrorId, NotFoundAPIError, TokenDuration, TokenType, UnauthorizedAPIError } from '@/types'
+import { decodeToken } from '@/services/tokenService'
 import { RequestHandler } from 'express'
-import { TokenDocument, TokenModel } from '@/models/Token'
-import { TokenType, TokenDuration, UnauthorizedAPIError, BadRequestAPIError, ErrorId, NotFoundAPIError } from '@/types'
-import { UserModel } from '@/models/User'
+import { TokenModel } from '@/models/Token'
 
 export const findTokenBearerLogger = createLogger('findTokenBearer')
 
-export const getTokenFromAuthorization = (authorization: string): TokenDocument | null => {
-  try {
-    return jwt.verify<TokenDocument>(authorization, env.jwtSecret, { maxAge: TokenDuration.Authorization })
-  } catch (e) {
-    return null
-  }
-}
-
 export const findTokenBearer: RequestHandler = async (request, response, next) => {
   try {
-    const authorization = request.get('X-Authorization')
+    let authorization = request.get('X-Authorization')
     assert(authorization, new BadRequestAPIError([ ErrorId.AuthorizationNotFound ]))
-    const tokenDocument = getTokenFromAuthorization(authorization)
-    assert(tokenDocument, new BadRequestAPIError([ ErrorId.AuthorizationMalformed ]))
-    const authToken = await TokenModel.findOne({ token: tokenDocument.token, type: TokenType.Authorization }).exec()
-    assert(authToken, new NotFoundAPIError())
-    const user = await UserModel.findById(authToken.userId).exec()
-    assert(user, new UnauthorizedAPIError(ErrorId.UserMandatory))
-    request.user = user
-    findTokenBearerLogger.pass(`Token bearer ${ user } has been found`)
+    assert(/^Bearer /.test(authorization), new BadRequestAPIError([ ErrorId.AuthorizationNotFound ]))
+    const token = decodeToken(authorization.slice(7), TokenDuration.Authorization)
+    assert(token, new BadRequestAPIError([ ErrorId.AuthorizationMalformed ]))
+    const tokenDocument = await TokenModel.findOne({ token, type: TokenType.Authorization }).exec()
+    assert(tokenDocument, new NotFoundAPIError())
+    const userDocument = await tokenDocument.getUser()
+    assert(userDocument, new UnauthorizedAPIError(ErrorId.UserMandatory))
+    request.user = userDocument
+    findTokenBearerLogger.pass(`Token bearer ${ userDocument } has been found`)
     next()
   } catch (e) {
     findTokenBearerLogger.error(e)
