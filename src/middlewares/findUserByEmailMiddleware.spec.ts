@@ -1,17 +1,17 @@
 import { BadRequestAPIError, ErrorId, NotFoundAPIError, UnauthorizedAPIError } from '@/types'
 import { connect, disconnect } from '@/core/db'
 import { findUserByEmail, findUserByEmailLogger } from './findUserByEmailMiddleware'
-import { NextFunction, Request, Response } from 'express'
 import { User, UserDocument, UserModel } from '@/models/User'
 
 describe('findUserByEmail middleware', () => {
   
-  let next: NextFunction
+  let request: any
   
   const email = 'test@test.com'
   const loggerErrorSpy = jest.spyOn(findUserByEmailLogger, 'error')
   const loggerPassSpy = jest.spyOn(findUserByEmailLogger, 'pass')
-  const response = <Response>{}
+  const next: any = jest.fn()
+  const response: any = {}
   const unauthorized = new UnauthorizedAPIError()
   
   beforeAll(async () => {
@@ -25,31 +25,32 @@ describe('findUserByEmail middleware', () => {
   
   beforeEach(() => {
     jest.resetAllMocks()
-    next = jest.fn()
+    request = {}
   })
   
   it('should throw on empty body', async () => {
-    await findUserByEmail(<Request>{}, response, next)
+    await findUserByEmail(request, response, next)
     expect(next).toHaveBeenCalledWith(unauthorized)
     expect(loggerErrorSpy).toHaveBeenCalledWith(new BadRequestAPIError([ ErrorId.EmailRequired ]))
-    await findUserByEmail(<Request>{ body: null }, response, next)
+    request.body = null
+    await findUserByEmail(request, response, next)
     expect(next).toHaveBeenCalledWith(unauthorized)
     expect(loggerErrorSpy).toHaveBeenCalledWith(new BadRequestAPIError([ ErrorId.EmailRequired ]))
-    await findUserByEmail(<Request>{ body: {} }, response, next)
+    request.body = {}
+    await findUserByEmail(request, response, next)
     expect(next).toHaveBeenCalledWith(unauthorized)
     expect(loggerErrorSpy).toHaveBeenCalledWith(new BadRequestAPIError([ ErrorId.EmailRequired ]))
   })
   
   it('should throw on not found user', async () => {
-    const body = { email: 'unknown' }
-    await findUserByEmail(<Request>{ body }, response, next)
+    request.body = { email: 'unknown' }
+    await findUserByEmail(request, response, next)
     expect(next).toHaveBeenCalledWith(unauthorized)
     expect(loggerErrorSpy).toHaveBeenCalledWith(new NotFoundAPIError())
   })
   
   it('should find a user', async () => {
-    const body = { email }
-    const request = <Request>{ body }
+    request.body = { email }
     await findUserByEmail(request, response, next)
     expect(next).toHaveBeenCalledWith()
     expect(loggerErrorSpy).not.toHaveBeenCalled()

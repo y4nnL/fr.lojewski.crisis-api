@@ -2880,13 +2880,6 @@ jest-environment-node@^26.6.2:
     jest-mock "^26.6.2"
     jest-util "^26.6.2"
 
-jest-express@^1.12.0:
-  version "1.12.0"
-  resolved "https://registry.yarnpkg.com/jest-express/-/jest-express-1.12.0.tgz#d193b4011b67a01ab4b62206d6e28e759cc8bf85"
-  integrity sha512-HVpmEtVLHgT/Wh2bGy3Fy6mXdoS0Clj7d4/cFnptw2JkCVepC3FOiboavqLYZv4x2oytpWgOqikhVr84f9CwZw==
-  dependencies:
-    jest-node-http "1.0.0"
-
 jest-get-type@^26.3.0:
   version "26.3.0"
   resolved "https://registry.yarnpkg.com/jest-get-type/-/jest-get-type-26.3.0.tgz#e97dc3c3f53c2b406ca7afaed4493b1d099199e0"
@@ -2977,11 +2970,6 @@ jest-mock@^26.6.2:
   dependencies:
     "@jest/types" "^26.6.2"
     "@types/node" "*"
-
-jest-node-http@1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/jest-node-http/-/jest-node-http-1.0.0.tgz#f692b0e3abfafd49b74a1953369478b59c9973b1"
-  integrity sha512-WcO1nqqkgwZ4sHAJ90YGqOiFYFkDm9eP8HsBwadedlJaF2T5JHM1BmnpskHDDlB3B4JzRl6CJgOpSOAOwoRfhQ==
 
 jest-pnp-resolver@^1.2.2:
   version "1.2.2"
@@ -3520,11 +3508,6 @@ merge-stream@^2.0.0:
   resolved "https://registry.yarnpkg.com/merge-stream/-/merge-stream-2.0.0.tgz#52823629a14dd00c9770fb6ad47dc6310f2c1f60"
   integrity sha512-abv/qOcuPfk3URPfDzmZU1LKmuw8kT+0nIHvKrKgFrwifol/doWcdA4ZqsWQ8ENrFKkd67Mfpo/LovbIUsbt3w==
 
-mergee@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/mergee/-/mergee-1.0.0.tgz#027c5addc650f6ecbe4bf56100bd00dae763fda7"
-  integrity sha512-hbbXD4LOcxVkpS+mp3BMEhkSDf+lTVENFeEeqACgjjL8WrgKuW2EyLT0fOHyTbyDiuRLZJZ1HrHNeiX4iOd79Q==
-
 methods@1.1.2, methods@^1.1.2, methods@~1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/methods/-/methods-1.1.2.tgz#5529a4d67654134edcc5266656835b0f851afcee"
@@ -3635,13 +3618,6 @@ mkdirp@^0.5.0, mkdirp@^0.5.3:
   integrity sha512-NKmAlESf6jMGym1++R0Ra7wvhV+wFW63FaSOFPwRahvea0gMUcGUhVeAg/0BC0wiv9ih5NYPB1Wn1UEI1/L+xQ==
   dependencies:
     minimist "^1.2.5"
-
-mock-http@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/mock-http/-/mock-http-1.1.0.tgz#b89380a718a103fc5801095804bedd0b20f7638c"
-  integrity sha512-H2HMGaHNQPWY8PdeEw4RFux2WEOHD6eJAtN3+iFELik5kGjPKAcoyPWcsC2vgDiTa2yimAEDssmMed51e+cBKQ==
-  dependencies:
-    mergee "^1.0.0"
 
 module-alias@^2.2.2:
   version "2.2.2"

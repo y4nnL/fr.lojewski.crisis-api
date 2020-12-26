@@ -8,7 +8,7 @@ import { ErrorId, UnauthorizedAPIError } from '@/types'
 import { RequestHandler } from 'express'
 import { RequestSignature } from 'http-signature'
 
-const verifySignatureLogger = createLogger('verifySignature')
+export const verifySignatureLogger = createLogger('verifySignature')
 const verify = (parsed: RequestSignature, pub: string): boolean => {
   try {
     return httpSignature.verify(parsed, pub)
@@ -26,10 +26,10 @@ export const verifySignature: RequestHandler = (request, response, next) => {
     const pub = fs.readFileSync(pubPath, 'ascii')
     const isVerified = verify(parsed, pub)
     assert(isVerified, new UnauthorizedAPIError(ErrorId.SignatureNotVerified))
-    verifySignatureLogger.pass(`Request [Signature ${ parsed.keyId }] is verified `)
+    verifySignatureLogger.pass(`Request [Signature ${ parsed.keyId }] is verified`)
     next()
   } catch (e) {
-    verifySignatureLogger.error(e.toString())
-    next(e)
+    verifySignatureLogger.error(e)
+    next(new UnauthorizedAPIError())
   }
 }

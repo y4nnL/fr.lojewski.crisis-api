@@ -1,32 +1,5 @@
 import * as mongoose from 'mongoose'
 import { RequestHandler } from 'express'
-import { UserDocument } from '@/models/User'
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Augmentations
-
-declare global {
-  
-  namespace Express {
-    
-    interface Request {
-      startTime?: Date
-      user?: UserDocument
-    }
-    
-    interface Response {
-      isErrorHandled?: boolean
-    }
-    
-  }
-  
-}
-
-declare module 'jest-express/lib/response' {
-  interface Response {
-    isErrorHandled?: boolean
-  }
-}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Mongoose helpers
@@ -80,36 +53,9 @@ export interface Env {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Exports
 
-export {
-  APIError,
-  BadRequestAPIError,
-  ErrorId,
-  ForbiddenAPIError,
-  NotFoundAPIError,
-  UnauthorizedAPIError,
-} from '@/types/error'
-
-export {
-  joiRequiredEmail,
-  joiRequiredPassword,
-} from '@/types/joi'
-
-export {
-  PingRequestHandler,
-  PingResponseBody,
-} from '@/types/monitoring'
-
-export {
-  AuthorizationCreateRequestBody,
-  AuthorizationCreateRequestHandler,
-  AuthorizationCreateResponseBody,
-  authorizationCreateValidation,
-  AuthorizationDeleteRequestHandler,
-  AuthorizationDeleteResponseBody,
-  TokenDuration,
-  TokenType,
-} from '@/types/token'
-
-export {
-  UserAction,
-} from '@/types/user'
+export * from '@/types/error'
+export * from '@/types/express'
+export * from '@/types/joi'
+export * from '@/types/monitoring'
+export * from '@/types/token'
+export * from '@/types/user'

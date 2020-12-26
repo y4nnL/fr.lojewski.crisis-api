@@ -1,64 +1,59 @@
 import { authorize } from './authorizeMiddleware'
 import { ErrorId, ForbiddenAPIError, UnauthorizedAPIError, UserAction } from '@/types'
-import { NextFunction, Request, RequestHandler, Response } from 'express'
-import { UserDocument, UserModel } from '@/models/User'
+import { UserModel } from '@/models/User'
 import { userService } from '@/services'
 
 describe('Authorize middleware', () => {
   
-  let next: NextFunction
+  let request: any
   let userMandatoryError: UnauthorizedAPIError
   let unauthorizedActionError: ForbiddenAPIError
   
+  const next: any = jest.fn()
+  const response: any = {}
+  
   beforeEach(() => {
-    next = <NextFunction>jest.fn()
+    request = {}
     userMandatoryError = new UnauthorizedAPIError(ErrorId.UserMandatory)
     unauthorizedActionError = new ForbiddenAPIError(ErrorId.ActionUnauthorized)
   })
   
   it('should expect a user', async () => {
-    const handler = authorize(UserAction.MonitoringPing)
-    await handler(<Request>{}, <Response>{}, next)
+    await authorize(UserAction.MonitoringPing)(request, response, next)
     expect(next).toHaveBeenCalledWith(userMandatoryError)
-    expect(next).toHaveBeenCalledWith(expect.objectContaining({ message: userMandatoryError.message }))
   })
   
   describe('on single action', () => {
-  
-    let handler: RequestHandler
+    
+    let handler: any
     
     beforeEach(() => {
       handler = authorize(UserAction.MonitoringPing)
     })
     
     it('should not authorize a user', async () => {
-      const user: UserDocument = new UserModel({
+      request.user = new UserModel({
         email: 'test',
-        actions: [
-          UserAction.TokenAuthorizationCreate
-        ],
+        actions: [ UserAction.TokenAuthorizationCreate ],
       })
-      await handler(<Request>{ user }, <Response>{}, next)
+      await handler(request, response, next)
       expect(next).toHaveBeenCalledWith(unauthorizedActionError)
-      expect(next).toHaveBeenCalledWith(expect.objectContaining({ message: unauthorizedActionError.message }))
     })
-  
+    
     it('should authorize a user', async () => {
-      const user: UserDocument = new UserModel({
+      request.user = new UserModel({
         email: 'test',
-        actions: [
-          UserAction.MonitoringPing
-        ],
+        actions: [ UserAction.MonitoringPing ],
       })
-      await handler(<Request>{ user }, <Response>{}, next)
+      await handler(request, response, next)
       expect(next).toHaveBeenCalledWith()
     })
     
   })
   
   describe('on multiple actions', () => {
-  
-    let handler: RequestHandler
+    
+    let handler: any
     
     beforeEach(() => {
       handler = authorize(
@@ -69,19 +64,16 @@ describe('Authorize middleware', () => {
     })
     
     it('should not authorize a user', async () => {
-      const user: UserDocument = new UserModel({
+      request.user = new UserModel({
         email: 'test',
-        actions: [
-          UserAction.MonitoringPing
-        ],
+        actions: [ UserAction.MonitoringPing ],
       })
-      await handler(<Request>{ user }, <Response>{}, next)
+      await handler(request, response, next)
       expect(next).toHaveBeenCalledWith(unauthorizedActionError)
-      expect(next).toHaveBeenCalledWith(expect.objectContaining({ message: unauthorizedActionError.message }))
     })
-  
+    
     it('should authorize a user', async () => {
-      const user: UserDocument = new UserModel({
+      request.user = new UserModel({
         email: 'test',
         actions: [
           UserAction.MonitoringPing,
@@ -89,28 +81,26 @@ describe('Authorize middleware', () => {
           UserAction.TokenAuthorizationDelete,
         ],
       })
-      await handler(<Request>{ user }, <Response>{}, next)
+      await handler(request, response, next)
       expect(next).toHaveBeenCalledWith()
     })
-  
+    
   })
   
   // non-regression tests
   
   it('multiple calls should not grow actions array', async () => {
-    let handler: RequestHandler = authorize(UserAction.MonitoringPing)
-    const user: UserDocument = new UserModel({
-      email: 'test',
-      actions: [
-        UserAction.MonitoringPing
-      ],
-    })
+    const handler = authorize(UserAction.MonitoringPing)
     const canUserPerformSpy = jest.spyOn(userService, 'canUserPerform')
-    await handler(<Request>{ user }, <Response>{}, next)
-    await handler(<Request>{ user }, <Response>{}, next)
-    await handler(<Request>{ user }, <Response>{}, next)
-    await handler(<Request>{ user }, <Response>{}, next)
-    await handler(<Request>{ user }, <Response>{}, next)
+    request.user = new UserModel({
+      email: 'test',
+      actions: [ UserAction.MonitoringPing ],
+    })
+    await handler(request, response, next)
+    await handler(request, response, next)
+    await handler(request, response, next)
+    await handler(request, response, next)
+    await handler(request, response, next)
     expect(canUserPerformSpy).toHaveBeenCalledTimes(5)
   })
   
