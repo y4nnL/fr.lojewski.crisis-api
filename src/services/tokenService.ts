@@ -3,25 +3,30 @@ import createLogger from '@/utils/logger'
 import env from '@/utils/env'
 import jwt from 'jsonwebtoken'
 import nodeAssert from 'assert'
-import * as token from '@/types/token'
+import {
+  AuthorizationCreateRequestHandler,
+  AuthorizationDeleteRequestHandler,
+  TokenDuration,
+  TokenType,
+  UnauthorizedAPIError,
+} from '@/types'
 import { isUserPasswordValid } from '@/services/userService'
 import { Token, TokenDocument, TokenModel } from '@/models'
-import { TokenDuration, UnauthorizedAPIError } from '@/types'
 import { v4 as uuidV4 } from 'uuid'
 
-type jwtToken = {
+type JWTToken = {
   token: string
 }
 
 const tokenLogger = createLogger('token')
 
 export const encodeToken = (rawToken: string, expiresIn: string): string => {
-  return jwt.sign(<jwtToken>{ token: rawToken }, env.jwtSecret, { expiresIn })
+  return jwt.sign(<JWTToken>{ token: rawToken }, env.jwtSecret, { expiresIn })
 }
 
 export const decodeToken = (signedToken: string, maxAge: string): string | null => {
   try {
-    const decoded = <jwtToken>jwt.verify(signedToken, env.jwtSecret, { maxAge })
+    const decoded = <JWTToken>jwt.verify(signedToken, env.jwtSecret, { maxAge })
     assert.isObject(decoded)
     assert.isString(decoded.token)
     return decoded.token
@@ -30,7 +35,7 @@ export const decodeToken = (signedToken: string, maxAge: string): string | null 
   }
 }
 
-export const createAuthorizationToken: token.AuthorizationCreateRequestHandler = async (request, response, next) => {
+export const createAuthorizationToken: AuthorizationCreateRequestHandler = async (request, response, next) => {
   if (!request.user) {
     return next(new UnauthorizedAPIError())
   }
@@ -39,7 +44,7 @@ export const createAuthorizationToken: token.AuthorizationCreateRequestHandler =
     const hasPasswordMatched = await isUserPasswordValid(user, request.body.password)
     nodeAssert.strictEqual(hasPasswordMatched, true, 'Password mismatch')
     const authorizationToken = await TokenModel.create({
-      type: token.TokenType.Authorization,
+      type: TokenType.Authorization,
       token: uuidV4(),
       userId: user._id,
     } as Token as TokenDocument)
@@ -51,7 +56,7 @@ export const createAuthorizationToken: token.AuthorizationCreateRequestHandler =
   }
 }
 
-export const deleteAuthorizationToken: token.AuthorizationDeleteRequestHandler = async (request, response, next) => {
+export const deleteAuthorizationToken: AuthorizationDeleteRequestHandler = async (request, response, next) => {
   if (!request.user) {
     return next(new UnauthorizedAPIError())
   }

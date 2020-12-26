@@ -1,6 +1,9 @@
 import { ErrorId } from '@/types'
 import { Joi } from 'express-validation'
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Types
+
 export const joiRequiredEmail =
   Joi
     .string()
@@ -20,3 +23,13 @@ export const joiRequiredPassword =
       'any.required': ErrorId.PasswordRequired,
       'string.pattern.base': ErrorId.PasswordMalformed,
     })
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Validations
+
+export const authorizationCreateValidation = {
+  body: Joi.object({
+    email: joiRequiredEmail,
+    password: joiRequiredPassword,
+  }),
+}

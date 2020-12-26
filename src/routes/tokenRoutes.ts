@@ -1,8 +1,8 @@
 import express from 'express'
 import * as middleware from '@/middlewares'
 import * as tokenService from '@/services/tokenService'
-import { validate } from 'express-validation'
 import { authorizationCreateValidation, UserAction } from '@/types'
+import { validate } from 'express-validation'
 
 const router = express.Router()
 
