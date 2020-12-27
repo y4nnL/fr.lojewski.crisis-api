@@ -22,11 +22,8 @@ namespace assert {
   export function ok(value: any, error?: Error): asserts value {
     assert(value, error)
   }
-  export function strictEqual<T>(value: any, match: T, error?: Error): asserts value is T {
-    _try(() => nodeAssert.strictEqual(value, match), error)
-  }
   export function isObject(value: any, error?: Error): asserts value is object {
-    _try(() => nodeAssert(value && typeof value === 'object'), error)
+    _try(() => nodeAssert(value !== null && typeof value === 'object'), error)
   }
   export function isString(value: any, error?: Error): asserts value is string {
     _try(() => nodeAssert(typeof value === 'string'), error)
