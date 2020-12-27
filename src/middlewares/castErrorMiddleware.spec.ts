@@ -10,6 +10,12 @@ describe('castError middleware', () => {
   const response: any = {}
   
   it('should cast Error to APIError', () => {
+    castError(null, request, response, next)
+    expect(next).toHaveBeenCalledWith(new error.APIError(500, ''))
+    castError('Error', request, response, next)
+    expect(next).toHaveBeenCalledWith(new error.APIError(500, 'Error'))
+    castError({ message: 'Error' }, request, response, next)
+    expect(next).toHaveBeenCalledWith(new error.APIError(500, 'Error'))
     castError(new Error('Error'), request, response, next)
     expect(next).toHaveBeenCalledWith(new error.APIError(500, 'Error'))
   })
@@ -58,6 +64,12 @@ describe('castError middleware', () => {
     const validation = new ValidationError({ body }, { statusCode: 400 })
     castError(validation, request, response, next)
     expect(next).toHaveBeenCalledWith(new error.BadRequestAPIError([ error.ErrorId.__Unknown__ ]))
+  })
+  
+  it('should cast no body express-validation ValidationError to APIError', () => {
+    const validation = new ValidationError({}, { statusCode: 400 })
+    castError(validation, request, response, next)
+    expect(next).toHaveBeenCalledWith(new error.BadRequestAPIError([]))
   })
   
 })

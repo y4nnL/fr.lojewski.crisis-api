@@ -14,9 +14,10 @@ export const castError: ErrorRequestHandler = (error: any, request, response, ne
     error.stack = ''
   } else {
     if (!(error instanceof APIError)) {
-      const stack = error?.stack
-      error = new APIError(httpStatus.INTERNAL_SERVER_ERROR, error.message || error)
-      error.stack = stack || ''
+      const stack = error ? error.stack || '' : ''
+      const message = error ? error.message || error : ''
+      error = new APIError(httpStatus.INTERNAL_SERVER_ERROR, message)
+      error.stack = stack
     }
   }
   next(error)

@@ -14,6 +14,7 @@ describe('handleNotFound middleware', () => {
   beforeEach(() => {
     jest.resetAllMocks()
     error.statusCode = 500
+    error.stack = 'stack'
     response = {
       json: jest.fn(),
       status: (c: any) => response.statusCode = c
@@ -39,6 +40,17 @@ describe('handleNotFound middleware', () => {
     expect(response.json).toHaveBeenCalledWith({ message: error.toString() })
     expect(response.json).not.toHaveBeenCalledWith({ stack: error.stack })
     expect(response.isErrorHandled).toStrictEqual(true)
+  })
+  
+  it('should have no stack', () => {
+    const loggerSpy = jest.spyOn(handleErrorLogger, 'error')
+    error.stack = ''
+    handleError(error, request, response, next)
+    expect(response.statusCode).toStrictEqual(500)
+    expect(response.json).toHaveBeenCalledWith({ message: error.toString() })
+    expect(loggerSpy.mock.calls).toEqual([
+      [ `Finished ${ request.method } ${ request.originalUrl } ${ error }` ],
+    ])
   })
   
   it('should never call the next function', () => {
