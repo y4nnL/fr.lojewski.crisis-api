@@ -3,7 +3,7 @@ import env from '@/utils/env'
 import jwt from 'jsonwebtoken'
 import mongoose from 'mongoose'
 import * as service from '@/services/tokenService'
-import { connect, disconnect } from '@/core/db'
+import { connect, disconnect } from '~/helpers/db'
 import { decodeToken } from '@/services/tokenService'
 import { ErrorId, TokenDuration, TokenType, UnauthorizedAPIError } from '@/types'
 import { TokenDocument, TokenModel, User, UserDocument, UserModel } from '@/models'
@@ -40,7 +40,6 @@ describe('token service', () => {
   })
   
   afterAll(async () => {
-    await TokenModel.deleteMany().exec()
     await disconnect()
   })
   

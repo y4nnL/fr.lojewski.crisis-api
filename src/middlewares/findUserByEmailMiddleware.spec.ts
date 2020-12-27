@@ -1,5 +1,5 @@
 import { BadRequestAPIError, ErrorId, NotFoundAPIError, UnauthorizedAPIError } from '@/types'
-import { connect, disconnect } from '@/core/db'
+import { connect, disconnect } from '~/helpers/db'
 import { findUserByEmail, findUserByEmailLogger } from './findUserByEmailMiddleware'
 import { User, UserDocument, UserModel } from '@/models/User'
 
@@ -21,7 +21,6 @@ describe('findUserByEmail middleware', () => {
   })
   
   afterAll(async () => {
-    await UserModel.deleteMany().exec()
     await disconnect()
   })
   
