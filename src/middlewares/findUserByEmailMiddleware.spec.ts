@@ -16,10 +16,12 @@ describe('findUserByEmail middleware', () => {
   
   beforeAll(async () => {
     await connect()
+    await UserModel.deleteMany().exec()
     await UserModel.create({ email } as User as UserDocument)
   })
   
   afterAll(async () => {
+    await UserModel.deleteMany().exec()
     await disconnect()
   })
   

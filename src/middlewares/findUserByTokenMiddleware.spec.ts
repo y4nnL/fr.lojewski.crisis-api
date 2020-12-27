@@ -21,6 +21,8 @@ describe('findUserByToken middleware', () => {
   
   beforeAll(async () => {
     await connect()
+    await TokenModel.deleteMany().exec()
+    await UserModel.deleteMany().exec()
     const user: User = { email }
     const userDocument = await UserModel.create(user as UserDocument)
     const tokenWUser: Token = {
@@ -44,6 +46,8 @@ describe('findUserByToken middleware', () => {
   })
   
   afterAll(async () => {
+    await TokenModel.deleteMany().exec()
+    await UserModel.deleteMany().exec()
     await disconnect()
   })
   

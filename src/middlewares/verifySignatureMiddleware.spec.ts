@@ -71,7 +71,8 @@ describe('verifySignature middleware', () => {
   
   beforeEach(() => {
     request.headers = {}
-    env.sshKeys = []
+    // @ts-ignore
+    env['sshKeys'] = []
   })
   
   it('should reject an unknown signature id', () => {
@@ -82,7 +83,8 @@ describe('verifySignature middleware', () => {
   })
   
   it('should reject a not found signature pub', () => {
-    env.sshKeys = [ rsa2.id ]
+    // @ts-ignore
+    env['sshKeys'] = [ rsa2.id ]
     httpSignature.sign(request, { key: rsa2.key, keyId: rsa2.id, keyPassphrase: rsa2.pwd })
     verifySignature(request, response, next)
     expect(next).toHaveBeenCalledWith(new UnauthorizedAPIError())
@@ -90,7 +92,8 @@ describe('verifySignature middleware', () => {
   })
   
   it('should reject a wrong signature pub', () => {
-    env.sshKeys = [ rsa1.id ]
+    // @ts-ignore
+    env['sshKeys'] = [ rsa1.id ]
     httpSignature.sign(request, { key: rsa2.key, keyId: rsa1.id, keyPassphrase: rsa2.pwd })
     verifySignature(request, response, next)
     expect(next).toHaveBeenCalledWith(new UnauthorizedAPIError())
@@ -98,7 +101,8 @@ describe('verifySignature middleware', () => {
   })
   
   it('should reject a malformed signature pub', () => {
-    env.sshKeys = [ rsa3.id ]
+    // @ts-ignore
+    env['sshKeys'] = [ rsa3.id ]
     httpSignature.sign(request, { key: rsa3.key, keyId: rsa3.id, keyPassphrase: rsa3.pwd })
     verifySignature(request, response, next)
     expect(next).toHaveBeenCalledWith(new UnauthorizedAPIError())
@@ -106,7 +110,8 @@ describe('verifySignature middleware', () => {
   })
   
   it('should accept the only one authorized signature', () => {
-    env.sshKeys = [ rsa1.id ]
+    // @ts-ignore
+    env['sshKeys'] = [ rsa1.id ]
     httpSignature.sign(request, { key: rsa1.key, keyId: rsa1.id, keyPassphrase: rsa1.pwd })
     verifySignature(request, response, next)
     expect(next).toHaveBeenCalledWith()
@@ -114,7 +119,8 @@ describe('verifySignature middleware', () => {
   })
   
   it('should accept an authorized signature', () => {
-    env.sshKeys = [ rsa1.id, rsa2.id, rsa3.id ]
+    // @ts-ignore
+    env['sshKeys'] = [ rsa1.id, rsa2.id, rsa3.id ]
     httpSignature.sign(request, { key: rsa1.key, keyId: rsa1.id, keyPassphrase: rsa1.pwd })
     verifySignature(request, response, next)
     expect(next).toHaveBeenCalledWith()

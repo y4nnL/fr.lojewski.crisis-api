@@ -22,7 +22,8 @@ describe('handleNotFound middleware', () => {
   
   it('should set the json response and statusCode', () => {
     const loggerSpy = jest.spyOn(handleErrorLogger, 'error')
-    env.isProduction = false
+    // @ts-ignore
+    env['isProduction'] = false
     handleError(error, request, response, next)
     expect(response.statusCode).toStrictEqual(500)
     expect(response.json).toHaveBeenCalledWith({ message: error.toString(), stack: error.stack })
@@ -30,7 +31,8 @@ describe('handleNotFound middleware', () => {
       [ `Finished ${ request.method } ${ request.originalUrl } ${ error }` ],
       [ error.stack ],
     ])
-    env.isProduction = true
+    // @ts-ignore
+    env['isProduction'] = true
     error.statusCode = 404
     handleError(error, request, response, next)
     expect(response.statusCode).toStrictEqual(404)

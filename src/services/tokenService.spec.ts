@@ -36,15 +36,18 @@ describe('token service', () => {
   
   beforeAll(async () => {
     await connect()
+    await TokenModel.deleteMany().exec()
   })
   
   afterAll(async () => {
+    await TokenModel.deleteMany().exec()
     await disconnect()
   })
   
   beforeEach(async () => {
     jest.resetAllMocks()
-    env.jwtSecret = 'secret'
+    // @ts-ignore
+    env['jwtSecret'] = 'secret'
     response.status(0)
     await TokenModel.deleteMany().exec()
   })
@@ -71,7 +74,8 @@ describe('token service', () => {
       let encoded = jwt.sign({ mal: 'formed' }, env.jwtSecret, { expiresIn: TokenDuration.Authorization })
       expect(service.decodeToken(encoded, TokenDuration.Authorization)).toStrictEqual(null)
       encoded = service.encodeToken('token', TokenDuration.Authorization)
-      env.jwtSecret = 'anotherSecret'
+      // @ts-ignore
+      env['jwtSecret'] = 'anotherSecret'
       expect(service.decodeToken(encoded, TokenDuration.Authorization)).toStrictEqual(null)
       encoded = service.encodeToken('token', <TokenDuration>'1s')
       await sleep(2)
