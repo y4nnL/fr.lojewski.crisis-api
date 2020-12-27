@@ -5,12 +5,12 @@ require('module-alias/register')
 require('./utils/env')
 
 import { connect } from '@/core/db'
-import { startServer } from '@/core/server'
+import { start } from '@/core/server'
 
 (async function () {
   const isDBConnected = await connect()
   if (isDBConnected) {
-    startServer()
+    start()
   }
 }())
 
