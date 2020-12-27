@@ -11,9 +11,9 @@ if (!fs.existsSync(env.pathCert) || !fs.existsSync(env.pathCertCA) || !fs.exists
   throw new Error('Unable to locate certificate files')
 }
 
+export const app = express()
 export const serverLogger = createLogger('server')
 
-const app = express()
 const ca = fs.readFileSync(env.pathCertCA, 'ascii')
 const cert = fs.readFileSync(env.pathCert, 'ascii')
 const key = fs.readFileSync(env.pathCertKey, 'ascii')

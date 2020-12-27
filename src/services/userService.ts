@@ -3,7 +3,7 @@ import { User } from '@/models'
 import { UserAction } from '@/types'
 
 export const canUserPerform = (user: User, action: UserAction): boolean => {
-  return user.actions ? user.actions.indexOf(action) >= 0 : false
+  return user.actions ? user.actions.includes(action) : false
 }
 
 export const isUserPasswordValid = async (user: User, password: string): Promise<boolean> => {

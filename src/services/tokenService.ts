@@ -2,10 +2,10 @@ import assert from '@/utils/assert'
 import createLogger from '@/utils/logger'
 import env from '@/utils/env'
 import jwt from 'jsonwebtoken'
-import nodeAssert from 'assert'
 import {
   AuthorizationCreateRequestHandler,
   AuthorizationDeleteRequestHandler,
+  ErrorId,
   TokenDuration,
   TokenType,
   UnauthorizedAPIError,
@@ -18,13 +18,13 @@ type JWTToken = {
   token: string
 }
 
-const tokenLogger = createLogger('token')
+export const tokenLogger = createLogger('token')
 
-export const encodeToken = (rawToken: string, expiresIn: string): string => {
+export const encodeToken = (rawToken: string, expiresIn: TokenDuration): string => {
   return jwt.sign(<JWTToken>{ token: rawToken }, env.jwtSecret, { expiresIn })
 }
 
-export const decodeToken = (signedToken: string, maxAge: string): string | null => {
+export const decodeToken = (signedToken: string, maxAge: TokenDuration): string | null => {
   try {
     const decoded = <JWTToken>jwt.verify(signedToken, env.jwtSecret, { maxAge })
     assert.isObject(decoded)
@@ -36,20 +36,18 @@ export const decodeToken = (signedToken: string, maxAge: string): string | null 
 }
 
 export const createAuthorizationToken: AuthorizationCreateRequestHandler = async (request, response, next) => {
-  if (!request.user) {
-    return next(new UnauthorizedAPIError())
-  }
-  const user = request.user
   try {
-    const hasPasswordMatched = await isUserPasswordValid(user, request.body.password)
-    nodeAssert.strictEqual(hasPasswordMatched, true, 'Password mismatch')
+    assert(request.user, new UnauthorizedAPIError(ErrorId.UserMandatory))
+    assert(await isUserPasswordValid(request.user, request.body.password),
+      new UnauthorizedAPIError(ErrorId.PasswordMismatch))
     const authorizationToken = await TokenModel.create({
-      type: TokenType.Authorization,
       token: uuidV4(),
-      userId: user._id,
+      type: TokenType.Authorization,
+      userId: request.user._id,
     } as Token as TokenDocument)
-    tokenLogger.info(`${ user } successfully created an authorization token`)
-    response.json({ token: encodeToken(authorizationToken.token, TokenDuration.Authorization) })
+    tokenLogger.pass(`Created an authorization token for ${ request.user }`)
+    response.status(200)
+      .json({ token: encodeToken(authorizationToken.token, TokenDuration.Authorization) })
   } catch (e) {
     tokenLogger.error(e)
     next(new UnauthorizedAPIError())
@@ -57,14 +55,12 @@ export const createAuthorizationToken: AuthorizationCreateRequestHandler = async
 }
 
 export const deleteAuthorizationToken: AuthorizationDeleteRequestHandler = async (request, response, next) => {
-  if (!request.user) {
-    return next(new UnauthorizedAPIError())
-  }
-  const user = request.user
   try {
-    await TokenModel.find({ userId: user._id }).deleteMany().exec()
-    tokenLogger.info(`Deleted authorization token for ${ user }`)
-    response.json({ success: true })
+    assert(request.user, new UnauthorizedAPIError(ErrorId.UserMandatory))
+    await TokenModel.find({ userId: request.user._id, type: TokenType.Authorization }).deleteMany().exec()
+    tokenLogger.pass(`Deleted all the authorization tokens for ${ request.user }`)
+    response.status(200)
+      .json({ success: true })
   } catch (e) {
     tokenLogger.error(e)
     next(new UnauthorizedAPIError())

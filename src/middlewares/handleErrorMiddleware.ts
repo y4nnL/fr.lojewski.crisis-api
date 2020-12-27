@@ -6,7 +6,7 @@ import { ErrorRequestHandler } from 'express'
 export const handleErrorLogger = createLogger('handleError')
 
 export const handleError: ErrorRequestHandler = (error: APIError, request, response, next) => {
-  const json: any = { message: error.message }
+  const json: any = { message: error.toString() }
   handleErrorLogger.error(`Finished ${ request.method } ${ request.originalUrl } ${ error }`)
   if (error.stack) {
     handleErrorLogger.error(error.stack)

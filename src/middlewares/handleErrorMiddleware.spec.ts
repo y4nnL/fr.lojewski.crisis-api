@@ -25,7 +25,7 @@ describe('handleNotFound middleware', () => {
     env.isProduction = false
     handleError(error, request, response, next)
     expect(response.statusCode).toStrictEqual(500)
-    expect(response.json).toHaveBeenCalledWith({ message: error.message, stack: error.stack })
+    expect(response.json).toHaveBeenCalledWith({ message: error.toString(), stack: error.stack })
     expect(loggerSpy.mock.calls).toEqual([
       [ `Finished ${ request.method } ${ request.originalUrl } ${ error }` ],
       [ error.stack ],
@@ -34,7 +34,7 @@ describe('handleNotFound middleware', () => {
     error.statusCode = 404
     handleError(error, request, response, next)
     expect(response.statusCode).toStrictEqual(404)
-    expect(response.json).toHaveBeenCalledWith({ message: error.message })
+    expect(response.json).toHaveBeenCalledWith({ message: error.toString() })
     expect(response.json).not.toHaveBeenCalledWith({ stack: error.stack })
     expect(response.isErrorHandled).toStrictEqual(true)
   })

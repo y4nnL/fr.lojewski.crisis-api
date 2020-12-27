@@ -64,6 +64,7 @@ export enum ErrorId {
   EmailMalformed = 'EmailMalformed',
   EmailRequired = 'EmailRequired',
   PasswordMalformed = 'PasswordMalformed',
+  PasswordMismatch = 'PasswordMismatch',
   PasswordRequired = 'PasswordRequired',
   SignatureUnknown = 'SignatureUnknown',
   SignatureNotFound = 'SignatureNotFound',

@@ -71,7 +71,7 @@ describe('findUserByToken middleware', () => {
   })
   
   it('should throw on a expired authorization', async () => {
-    request.headers['x-authorization'] = 'Bearer ' + encodeToken('token', '1s')
+    request.headers['x-authorization'] = 'Bearer ' + encodeToken('token', <TokenDuration>'1s')
     await sleep(2)
     await findUserByToken(request, response, next)
     expect(next).toHaveBeenCalledWith(unauthorized)
