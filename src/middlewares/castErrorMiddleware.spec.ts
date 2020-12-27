@@ -18,6 +18,8 @@ describe('castError middleware', () => {
     expect(next).toHaveBeenCalledWith(new error.APIError(500, 'Error'))
     castError(new Error('Error'), request, response, next)
     expect(next).toHaveBeenCalledWith(new error.APIError(500, 'Error'))
+    // types/error.ts coverage
+    expect(new error.APIError(500, '').toString()).toStrictEqual('[APIError (500)]')
   })
   
   it('should let APIError pass through', () => {

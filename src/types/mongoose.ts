@@ -14,10 +14,8 @@ export type SchemaDefinition<T> = mongoose.SchemaDefinition &
 
 export class SchemaClass<T> extends mongoose.Schema {
   methods: T
-  constructor(definition?: mongoose.SchemaDefinition, methods?: T, options?: mongoose.SchemaOptions) {
+  constructor(definition: mongoose.SchemaDefinition, methods: T, options?: mongoose.SchemaOptions) {
     super(definition, options)
-    if (methods) {
-      this.methods = methods
-    }
+    this.methods = methods
   }
 }
