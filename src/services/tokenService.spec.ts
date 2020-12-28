@@ -6,6 +6,7 @@ import * as service from '@/services/tokenService'
 import { connect, disconnect } from '~/helpers/db'
 import { decodeToken } from '@/services/tokenService'
 import { ErrorId, TokenDuration, TokenType, UnauthorizedAPIError } from '@/types'
+import { sleep } from '~/helpers/utils'
 import { TokenDocument, TokenModel, User, UserDocument, UserModel } from '@/models'
 
 describe('token service', () => {
@@ -13,7 +14,6 @@ describe('token service', () => {
   const loggerErrorSpy = jest.spyOn(service.tokenLogger, 'error')
   const loggerPassSpy = jest.spyOn(service.tokenLogger, 'pass')
   const next = jest.fn()
-  const sleep = async (time: number) => await new Promise((resolve) => setTimeout(resolve, time * 1000))
   const unauthorized = new UnauthorizedAPIError()
   
   const response: any = {

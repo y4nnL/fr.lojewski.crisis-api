@@ -1,5 +1,6 @@
 import { serverLogger } from '@/core/server' // import this first to avoid CD
 import { log } from './logMiddleware'
+import { sleep } from '~/helpers/utils'
 
 describe('log middleware', () => {
   
@@ -15,7 +16,6 @@ describe('log middleware', () => {
     on: (event: any, handler: any) => onHandler = handler,
     statusCode: 200,
   }
-  const sleep = async (time: number) => await new Promise((resolve) => setTimeout(resolve, time * 1000))
   
   it('should log server started & finished request events', async () => {
     log(request, response, next)

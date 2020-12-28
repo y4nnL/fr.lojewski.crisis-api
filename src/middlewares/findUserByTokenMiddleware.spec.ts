@@ -3,6 +3,7 @@ import { BadRequestAPIError, ErrorId, NotFoundAPIError, TokenDuration, TokenType
 import { connect, disconnect } from '~/helpers/db'
 import { encodeToken } from '@/services/tokenService'
 import { findUserByToken, findUserByTokenLogger } from './findUserByTokenMiddleware'
+import { sleep } from '~/helpers/utils'
 import { Token, TokenDocument, TokenModel, User, UserDocument, UserModel } from '@/models'
 
 describe('findUserByToken middleware', () => {
@@ -16,7 +17,6 @@ describe('findUserByToken middleware', () => {
   const loggerPassSpy = jest.spyOn(findUserByTokenLogger, 'pass')
   const next: any = jest.fn()
   const response: any = {}
-  const sleep = async (time: number) => await new Promise((resolve) => setTimeout(resolve, time * 1000))
   const unauthorized = new UnauthorizedAPIError()
   
   beforeAll(async () => {
