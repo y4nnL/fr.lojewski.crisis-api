@@ -39,11 +39,9 @@ function level(level: string) {
     case 'pass':
       return chalk.green(level)
     case 'warn':
-      return chalk.rgb(206, 100, 0)
+      return chalk.keyword('orange')(level)
     case 'error':
       return chalk.red(level)
-    default:
-      return chalk.grey(level)
   }
 }
 
@@ -69,35 +67,11 @@ const fixError: FormatWrap = format((info: any) => {
 })
 
 function stringify(message: any, whiteSpacesLength = 0, startWithNewline = true): string {
-  const type = typeOf(message)
-  return type in stringify ? stringify[type](message, whiteSpacesLength, startWithNewline) : chalk.white(message)
+  return stringifier[typeOf(message)](message, whiteSpacesLength, startWithNewline)
 }
 
-namespace stringify {
-  
-  export const BOOLEAN = (m: any) => chalk.rgb(204, 120, 50).bgBlack(m)
-  export const CLASS = (m: any, wsl: number, nl: boolean) => stringify.OBJECT(m, wsl, nl)
-  export const DATE = (m: any) => stringify.SYMBOL(m)
-  export const NULL = (m: any) => stringify.BOOLEAN(m)
-  export const NUMBER = (m: any) => chalk.rgb(104, 151, 187).bgBlack(m)
-  export const REGEXP = (m: any) => stringify.NUMBER(m)
-  export const STRING = (m: any) => chalk.rgb(106, 135, 89).bgBlack(m)
-  export const SYMBOL = (m: any) => chalk.rgb(152, 118, 170).bgBlack(m)
-  export const UNDEFINED = (m: any) => stringify.BOOLEAN(m)
-  
-  export const OBJECT = (m: any, wsl: number, nl: boolean) => {
-    const c = typeOf(m) === 'CLASS' ? m.constructor.name : ''
-    if (c === 'ObjectID') return `(ObjectId) { ${ m._id } }`
-    const ws = wsl ? new Array(wsl).join(' ') + ' ' : ''
-    const ws2 = new Array(wsl + 2).join(' ') + ' '
-    const sb = [ `${ nl ? `\n${ ws }` : '' }${ c ? `(${ c }) ` : '' }{` ]
-    Object.keys(m).forEach((key) =>
-      sb.push(`${ ws2 }${ chalk.rgb(152, 118, 170).bgBlack(key) }: ${ stringify(m[key], wsl + 2, false) },`))
-    sb.push(`${ ws }}`)
-    return sb.join('\n')
-  }
-  
-  export const ARRAY = (m: any, wsl: number, nl: boolean) => {
+const stringifier = {
+  ARRAY: (m: any, wsl: number, nl: boolean) => {
     const ws = wsl ? new Array(wsl).join(' ') + ' ' : ''
     const ws2 = new Array(wsl + 2).join(' ') + ' '
     const sb = [ `${ nl ? `\n${ ws }` : '' }[` ]
@@ -105,8 +79,27 @@ namespace stringify {
       sb.push(`${ ws2 }[${ i }] ${ stringify(v, wsl + 2, false) },`))
     sb.push(`${ ws }]`)
     return sb.join('\n')
-  }
-  
+  },
+  BOOLEAN: (m: any) => chalk.rgb(204, 120, 50).visible(m),
+  CLASS: (m: any, wsl: number, nl: boolean) => stringifier.OBJECT(m, wsl, nl),
+  DATE: (m: any) => stringifier.SYMBOL(m),
+  NULL: (m: any) => stringifier.BOOLEAN(m),
+  NUMBER: (m: any) => chalk.rgb(104, 151, 187).visible(m),
+  OBJECT: (m: any, wsl: number, nl: boolean) => {
+    const c = typeOf(m) === 'CLASS' ? m.constructor.name : ''
+    if (c === 'ObjectID') return `ObjectId { ${ m._id } }`
+    const ws = wsl ? new Array(wsl).join(' ') + ' ' : ''
+    const ws2 = new Array(wsl + 2).join(' ') + ' '
+    const sb = [ `${ nl ? `\n${ ws }` : '' }${ c ? `${ c } ` : '' }{` ]
+    Object.keys(m).forEach((key) =>
+      sb.push(`${ ws2 }${ chalk.rgb(152, 118, 170).visible(key) }: ${ stringify(m[key], wsl + 2, false) },`))
+    sb.push(`${ ws }}`)
+    return sb.join('\n')
+  },
+  REGEXP: (m: any) => stringifier.NUMBER(m),
+  STRING: (m: any) => chalk.rgb(106, 135, 89).visible(m),
+  SYMBOL: (m: any) => chalk.rgb(152, 118, 170).visible(m.toString()),
+  UNDEFINED: (m: any) => stringifier.BOOLEAN(m),
 }
 
 export default function (service: string): Logger {
