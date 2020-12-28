@@ -1,14 +1,14 @@
 import express from 'express'
 import * as middleware from '@/middlewares'
 import * as tokenService from '@/services/tokenService'
-import { authorizationCreateValidation, UserAction } from '@/types'
+import { authorizationCreateSchema, UserAction } from '@/types'
 import { validate } from 'express-validation'
 
 const router = express.Router()
 
 router.route('/authorization')
   .post(
-    validate(authorizationCreateValidation),
+    validate(authorizationCreateSchema, {}, { abortEarly: false }),
     middleware.findUserByEmail,
     middleware.authorize(UserAction.TokenAuthorizationCreate),
     tokenService.createAuthorizationToken,

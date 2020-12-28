@@ -1,4 +1,7 @@
 module.exports = {
+  collectCoverageFrom: [
+    'src/**/{!(index|main),}.ts'
+  ],
   globalSetup: './jest.setup.ts',
   globalTeardown: './jest.teardown.ts',
   moduleNameMapper: {
@@ -8,9 +11,10 @@ module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
   testPathIgnorePatterns: [
-      'node_modules',
-      'dist'
+    'node_modules',
+    'dist',
+    'test'
   ],
   silent: false,
-  verbose: false
+  verbose: false,
 };
