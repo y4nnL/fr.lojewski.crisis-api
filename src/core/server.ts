@@ -28,20 +28,28 @@ app.use(middleware.handleNotFound)
 app.use(middleware.castError)
 app.use(middleware.handleError)
 
-export function start(callback?: () => void) {
-  server.listen(env.serverPort, () => {
-    serverLogger.info(`Started on https://localhost:${ env.serverPort }/`)
-    if (callback) {
-      callback()
+export async function start(): Promise<boolean> {
+  return new Promise((resolve, reject) => {
+    try {
+      server.listen(env.serverPort, () => {
+        serverLogger.pass(`Started on https://localhost:${ env.serverPort }/`)
+        resolve(true)
+      })
+    } catch (e) {
+      reject(e)
     }
   })
 }
 
-export function stop(callback?: () => void) {
-  server.close(() => {
-    serverLogger.info(`Stopped on https://localhost:${ env.serverPort }/`)
-    if (callback) {
-      callback()
-    }
+export async function stop(): Promise<boolean> {
+  return new Promise((resolve, reject) => {
+    server.close((error) => {
+      if (error) {
+        reject(error)
+      } else {
+        serverLogger.pass(`Stopped on https://localhost:${ env.serverPort }/`)
+        resolve(true)
+      }
+    })
   })
 }

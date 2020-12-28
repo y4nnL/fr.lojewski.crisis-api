@@ -1,23 +1,29 @@
+import assert from '@/utils/assert'
 import createLogger from '@/utils/logger'
 import env from '@/utils/env'
 import mongoose from 'mongoose'
 
-const dbLogger = createLogger('db')
+let dbName: string | undefined
+
+export const dbLogger = createLogger('db')
+
+if (env.isDevelopment) {
+  mongoose.set('debug', (collectionName: any, method: any, query: any) => {
+    dbLogger.debug(`${ collectionName }.${ method }`)
+    dbLogger.debug(query)
+  })
+}
 
 export async function connect(): Promise<boolean> {
   try {
-    const db = env.dbUri.split('/').pop()
+    dbName = env.dbUri.split('/').pop()
+    assert(dbName)
+    dbName = dbName.replace(/\?$/, '')
     await mongoose.connect(env.dbUri, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     })
-    dbLogger.info(`Connected to "${ db }"`)
-    if (env.isDevelopment) {
-      mongoose.set('debug', (collectionName: any, method: any, query: any) => {
-        dbLogger.debug(`${ collectionName }.${ method }`)
-        dbLogger.debug(query)
-      })
-    }
+    dbLogger.pass(`Connected to "${ dbName }"`)
     return true
   } catch (e) {
     dbLogger.error('Unable to connect to database')
@@ -27,4 +33,5 @@ export async function connect(): Promise<boolean> {
 
 export async function disconnect() {
   await mongoose.disconnect()
+  dbLogger.pass(`Disconnected from "${ dbName }"`)
 }

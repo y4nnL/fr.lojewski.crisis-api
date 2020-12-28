@@ -2,7 +2,7 @@
   "name": "crisis-api",
   "version": "0.0.1",
   "description": "Crisis API",
-  "main": "dist/main.js",
+  "main": "dist/src/main.js",
   "repository": "git@github.com:y4nnL/fr.lojewski.crisis-api.git",
   "author": "Yann LOJEWKSI <yann.lojewski@gmail.com>",
   "license": "MIT",
@@ -48,7 +48,6 @@
     "test:watch": "jest --watch"
   },
   "_moduleAliases": {
-    "@": "dist",
-    "~": "dist"
+    "@": "dist/src"
   }
 }

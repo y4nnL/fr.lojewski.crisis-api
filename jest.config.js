@@ -10,5 +10,7 @@ module.exports = {
   testPathIgnorePatterns: [
       'node_modules',
       'dist'
-  ]
+  ],
+  silent: false,
+  verbose: false
 };

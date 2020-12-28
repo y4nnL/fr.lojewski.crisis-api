@@ -10,7 +10,7 @@ import { start } from '@/core/server'
 (async function () {
   const isDBConnected = await connect()
   if (isDBConnected) {
-    start()
+    await start()
   }
 }())
 

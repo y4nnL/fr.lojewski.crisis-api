@@ -1,6 +1,6 @@
 import env from '@/utils/env'
 
-describe('server', () => {
+describe('server core', () => {
   
   const pathCert = env.pathCert
   const pathCertCA = env.pathCertCA
@@ -37,16 +37,25 @@ describe('server', () => {
     expect(() => require('./server')).toThrow('Unable to locate certificate files')
   })
   
-  it('should start & stop', (done) => {
+  it('should start & stop', async () => {
     const server = require('./server')
-    const loggerSpy = jest.spyOn(server.serverLogger, 'info')
-    server.start(() => {
-      expect(loggerSpy).toHaveBeenCalledWith(`Started on https://localhost:${ env.serverPort }/`)
-      server.stop(() => {
-        expect(loggerSpy).toHaveBeenCalledWith(`Stopped on https://localhost:${ env.serverPort }/`)
-        done()
-      })
-    })
+    const loggerSpy = jest.spyOn(server.serverLogger, 'pass')
+    expect(await server.start()).toStrictEqual(true)
+    expect(loggerSpy).toHaveBeenCalledWith(`Started on https://localhost:${ env.serverPort }/`)
+    expect(await server.stop()).toStrictEqual(true)
+    expect(loggerSpy).toHaveBeenCalledWith(`Stopped on https://localhost:${ env.serverPort }/`)
+  })
+  
+  it('should not start twice', async () => {
+    const server = require('./server')
+    await server.start()
+    await expect(server.start()).rejects.toBeTruthy()
+    await server.stop()
+  })
+  
+  it('should not stop if not started', async () => {
+    const server = require('./server')
+    await expect(server.stop()).rejects.toBeTruthy()
   })
   
 })
