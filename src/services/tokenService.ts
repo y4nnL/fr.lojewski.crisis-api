@@ -1,7 +1,7 @@
-import assert from '@/utils/assert'
 import createLogger from '@/utils/logger'
 import env from '@/utils/env'
 import jwt from 'jsonwebtoken'
+import { assert } from '@/utils/assert'
 import {
   AuthorizationCreateRequestHandler,
   AuthorizationDeleteRequestHandler,
@@ -37,8 +37,8 @@ export const decodeToken = (signedToken: string, maxAge: TokenDuration): string 
 
 export const createAuthorizationToken: AuthorizationCreateRequestHandler = async (request, response, next) => {
   try {
-    assert(request.user, new UnauthorizedAPIError(ErrorId.UserMandatory))
-    assert(await isUserPasswordValid(request.user, request.body.password),
+    assert.ok(request.user, new UnauthorizedAPIError(ErrorId.UserMandatory))
+    assert.ok(await isUserPasswordValid(request.user, request.body.password),
       new UnauthorizedAPIError(ErrorId.PasswordMismatch))
     const authorizationToken = await TokenModel.create({
       token: uuidV4(),
@@ -56,7 +56,7 @@ export const createAuthorizationToken: AuthorizationCreateRequestHandler = async
 
 export const deleteAuthorizationToken: AuthorizationDeleteRequestHandler = async (request, response, next) => {
   try {
-    assert(request.user, new UnauthorizedAPIError(ErrorId.UserMandatory))
+    assert.ok(request.user, new UnauthorizedAPIError(ErrorId.UserMandatory))
     await TokenModel.find({ userId: request.user._id, type: TokenType.Authorization }).deleteMany().exec()
     tokenLogger.pass(`Deleted all the authorization tokens for ${ request.user }`)
     response.status(200)

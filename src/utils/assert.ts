@@ -5,6 +5,12 @@ import nodeAssert from 'assert'
  * We do want our error instances to be thrown instead
  */
 
+interface Assert {
+  ok(value: any, error?: Error): asserts value
+  isObject(value: any, error?: Error): asserts value is object
+  isString(value: any, error?: Error): asserts value is string
+}
+
 const _try = (fn: Function, error?: Error) => {
   try {
     fn()
@@ -13,22 +19,17 @@ const _try = (fn: Function, error?: Error) => {
   }
 }
 
-function assert(value: any, error?: Error): asserts value {
-  _try(() => nodeAssert(value), error)
-}
-
-namespace assert {
-  
-  export function ok(value: any, error?: Error): asserts value {
-    assert(value, error)
-  }
-  export function isObject(value: any, error?: Error): asserts value is object {
+const assert: Assert = {
+  ok(value: any, error?: Error): asserts value {
+    _try(() => nodeAssert(value), error)
+  },
+  isObject(value: any, error?: Error): asserts value is object {
     _try(() => nodeAssert(value !== null && typeof value === 'object'), error)
-  }
-  export function isString(value: any, error?: Error): asserts value is string {
+  },
+  isString(value: any, error?: Error): asserts value is string {
     _try(() => nodeAssert(typeof value === 'string'), error)
-  }
-  
+  },
 }
 
-export default assert
+export { assert }
+export default assert.ok
