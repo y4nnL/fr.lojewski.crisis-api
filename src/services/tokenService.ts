@@ -50,7 +50,7 @@ export const createAuthorizationToken: AuthorizationCreateRequestHandler = async
       .json({ token: encodeToken(authorizationToken.token, TokenDuration.Authorization) })
   } catch (e) {
     tokenLogger.error(e)
-    next(new UnauthorizedAPIError())
+    next(e)
   }
 }
 
@@ -63,6 +63,6 @@ export const deleteAuthorizationToken: AuthorizationDeleteRequestHandler = async
       .json({ success: true })
   } catch (e) {
     tokenLogger.error(e)
-    next(new UnauthorizedAPIError())
+    next(e)
   }
 }

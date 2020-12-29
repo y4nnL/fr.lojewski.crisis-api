@@ -11,10 +11,8 @@ import { TokenDocument, TokenModel, User, UserDocument, UserModel } from '@/mode
 
 describe('token service', () => {
   
-  const loggerErrorSpy = jest.spyOn(service.tokenLogger, 'error')
   const loggerPassSpy = jest.spyOn(service.tokenLogger, 'pass')
   const next = jest.fn()
-  const unauthorized = new UnauthorizedAPIError()
   
   const response: any = {
     json: jest.fn(),
@@ -36,7 +34,6 @@ describe('token service', () => {
   
   beforeAll(async () => {
     await connect()
-    await TokenModel.deleteMany().exec()
   })
   
   afterAll(async () => {
@@ -44,9 +41,10 @@ describe('token service', () => {
   })
   
   beforeEach(async () => {
-    jest.resetAllMocks()
     // @ts-ignore
     env['jwtSecret'] = 'secret'
+    loggerPassSpy.mockClear()
+    next.mockClear()
     response.status(0)
     await TokenModel.deleteMany().exec()
   })
@@ -93,8 +91,7 @@ describe('token service', () => {
     
     it('should throw on a missing user', async () => {
       await service.createAuthorizationToken(<any>{}, response, next)
-      expect(next).toHaveBeenCalledWith(unauthorized)
-      expect(loggerErrorSpy).toHaveBeenCalledWith(new UnauthorizedAPIError(ErrorId.UserMandatory))
+      expect(next).toHaveBeenCalledWith(new UnauthorizedAPIError(ErrorId.UserMandatory))
     })
     
     it('should throw on a password mismatch', async () => {
@@ -103,8 +100,7 @@ describe('token service', () => {
         body: { password: 'mismatch' },
       }
       await service.createAuthorizationToken(request, response, next)
-      expect(next).toHaveBeenCalledWith(unauthorized)
-      expect(loggerErrorSpy).toHaveBeenCalledWith(new UnauthorizedAPIError(ErrorId.PasswordMismatch))
+      expect(next).toHaveBeenCalledWith(new UnauthorizedAPIError(ErrorId.PasswordMismatch))
     })
     
     it('should create an authorization token', async () => {
@@ -130,8 +126,7 @@ describe('token service', () => {
     
     it('should throw on a missing user', async () => {
       await service.deleteAuthorizationToken(<any>{}, response, next)
-      expect(next).toHaveBeenCalledWith(unauthorized)
-      expect(loggerErrorSpy).toHaveBeenCalledWith(new UnauthorizedAPIError(ErrorId.UserMandatory))
+      expect(next).toHaveBeenCalledWith(new UnauthorizedAPIError(ErrorId.UserMandatory))
     })
     
     it('should delete authorization tokens', async () => {
