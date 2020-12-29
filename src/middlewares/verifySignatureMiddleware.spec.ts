@@ -15,9 +15,8 @@ interface RSA {
 
 describe('verifySignature middleware', () => {
   
-  const loggerErrorSpy = jest.spyOn(verifySignatureLogger, 'error')
   const loggerPassSpy = jest.spyOn(verifySignatureLogger, 'pass')
-  const next: any = jest.fn()
+  const next = jest.fn()
   const request: any = {
     getHeader: (h: any) => request.headers[h.toLowerCase()],
     setHeader: (h: any, v: any) => request.headers[h.toLowerCase()] = v,
@@ -70,16 +69,17 @@ describe('verifySignature middleware', () => {
   })
   
   beforeEach(() => {
-    request.headers = {}
     // @ts-ignore
     env['sshKeys'] = []
+    loggerPassSpy.mockClear()
+    next.mockClear()
+    request.headers = {}
   })
   
   it('should reject an unknown signature id', () => {
     httpSignature.sign(request, { key: rsa1.key, keyId: rsa1.id, keyPassphrase: rsa1.pwd })
     verifySignature(request, response, next)
-    expect(next).toHaveBeenCalledWith(new UnauthorizedAPIError())
-    expect(loggerErrorSpy).toHaveBeenCalledWith(new UnauthorizedAPIError(ErrorId.SignatureUnknown))
+    expect(next).toHaveBeenCalledWith(new UnauthorizedAPIError(ErrorId.SignatureUnknown))
   })
   
   it('should reject a not found signature pub', () => {
@@ -87,8 +87,7 @@ describe('verifySignature middleware', () => {
     env['sshKeys'] = [ rsa2.id ]
     httpSignature.sign(request, { key: rsa2.key, keyId: rsa2.id, keyPassphrase: rsa2.pwd })
     verifySignature(request, response, next)
-    expect(next).toHaveBeenCalledWith(new UnauthorizedAPIError())
-    expect(loggerErrorSpy).toHaveBeenCalledWith(new UnauthorizedAPIError(ErrorId.SignatureNotFound))
+    expect(next).toHaveBeenCalledWith(new UnauthorizedAPIError(ErrorId.SignatureNotFound))
   })
   
   it('should reject a wrong signature pub', () => {
@@ -96,8 +95,7 @@ describe('verifySignature middleware', () => {
     env['sshKeys'] = [ rsa1.id ]
     httpSignature.sign(request, { key: rsa2.key, keyId: rsa1.id, keyPassphrase: rsa2.pwd })
     verifySignature(request, response, next)
-    expect(next).toHaveBeenCalledWith(new UnauthorizedAPIError())
-    expect(loggerErrorSpy).toHaveBeenCalledWith(new UnauthorizedAPIError(ErrorId.SignatureNotVerified))
+    expect(next).toHaveBeenCalledWith(new UnauthorizedAPIError(ErrorId.SignatureNotVerified))
   })
   
   it('should reject a malformed signature pub', () => {
@@ -105,8 +103,7 @@ describe('verifySignature middleware', () => {
     env['sshKeys'] = [ rsa3.id ]
     httpSignature.sign(request, { key: rsa3.key, keyId: rsa3.id, keyPassphrase: rsa3.pwd })
     verifySignature(request, response, next)
-    expect(next).toHaveBeenCalledWith(new UnauthorizedAPIError())
-    expect(loggerErrorSpy).toHaveBeenCalledWith(new UnauthorizedAPIError(ErrorId.SignatureNotVerified))
+    expect(next).toHaveBeenCalledWith(new UnauthorizedAPIError(ErrorId.SignatureNotVerified))
   })
   
   it('should accept the only one authorized signature', () => {

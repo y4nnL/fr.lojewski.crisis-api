@@ -30,6 +30,6 @@ export const verifySignature: RequestHandler = (request, response, next) => {
     next()
   } catch (e) {
     verifySignatureLogger.error(e)
-    next(new UnauthorizedAPIError())
+    next(e)
   }
 }
