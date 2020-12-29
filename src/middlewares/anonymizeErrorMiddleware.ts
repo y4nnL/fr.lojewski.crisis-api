@@ -6,9 +6,9 @@ type RH = RequestHandler
 
 export const anonymizeErrorLogger = createLogger('anonymizeError')
 
-function anonymizeError(requestHandler: RH, anonymousError: APIError): RH
-function anonymizeError(requestHandler: RH[], anonymousError: APIError): RH[]
-function anonymizeError(requestHandler: RH | RH[], anonymousError: APIError): RH | RH[] {
+function anonymizeError(anonymousError: APIError, requestHandler: RH): RH
+function anonymizeError(anonymousError: APIError, ...requestHandlers: RH[]): RH[]
+function anonymizeError(anonymousError: APIError, ...requestHandlers: RH[]): RH | RH[] {
   const buildHandler = (handler: RH): RH =>
     (request: Request, response: Response, next: NextFunction) => {
       handler(request, response, (error?: any) => {
@@ -21,9 +21,9 @@ function anonymizeError(requestHandler: RH | RH[], anonymousError: APIError): RH
       })
     }
   
-  return typeof requestHandler === 'function' ?
-    buildHandler(requestHandler) :
-    requestHandler.map<RH>(buildHandler)
+  return requestHandlers.length === 1 ?
+    buildHandler(requestHandlers[0]) :
+    requestHandlers.map<RH>(buildHandler)
 }
 
 export { anonymizeError }

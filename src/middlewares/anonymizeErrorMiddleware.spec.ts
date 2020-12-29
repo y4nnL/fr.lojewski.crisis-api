@@ -15,14 +15,14 @@ describe('anonymizeError middleware', () => {
   describe('as a single middleware', () => {
   
     it('should not next at all', () => {
-      const handler = anonymizeError(() => {}, anonymousError)
+      const handler = anonymizeError(anonymousError, () => {})
       handler(<any>{}, <any>{}, next)
       expect(next).not.toHaveBeenCalled()
       expect(loggerErrorSpy).not.toHaveBeenCalled()
     })
   
     it('should not next any errors', () => {
-      const handler = anonymizeError(({}, {}, localNext) => { localNext() }, anonymousError)
+      const handler = anonymizeError(anonymousError, ({}, {}, localNext) => { localNext() })
       handler(<any>{}, <any>{}, next)
       expect(next).toHaveBeenCalledWith()
       expect(loggerErrorSpy).not.toHaveBeenCalled()
@@ -30,7 +30,7 @@ describe('anonymizeError middleware', () => {
   
     it('should next the anonymous error', () => {
       const error = new UnauthorizedAPIError(ErrorId.ActionUnauthorized)
-      const handler = anonymizeError(({}, {}, localNext) => { localNext(error) }, anonymousError)
+      const handler = anonymizeError(anonymousError, ({}, {}, localNext) => { localNext(error) })
       handler(<any>{}, <any>{}, next)
       expect(next).toHaveBeenCalledWith(anonymousError)
       expect(loggerErrorSpy).toHaveBeenCalledWith(error)
@@ -38,14 +38,15 @@ describe('anonymizeError middleware', () => {
     
   })
   
-  describe('as a list of middleware', () => {
+  describe('as a middleware list', () => {
   
     it('should not next at all', () => {
-      const handlers = anonymizeError([
+      const handlers = anonymizeError(
+        anonymousError,
         () => {},
         () => {},
         () => {},
-      ], anonymousError)
+      )
       handlers.forEach((handler, i) => handler(<any>{}, <any>{}, nextList[i]))
       expect(nextList[0]).not.toHaveBeenCalled()
       expect(nextList[1]).not.toHaveBeenCalled()
@@ -54,11 +55,12 @@ describe('anonymizeError middleware', () => {
     })
   
     it('should not next any errors', () => {
-      const handlers = anonymizeError([
+      const handlers = anonymizeError(
+        anonymousError,
         ({}, {}, localNext) => { localNext() },
         ({}, {}, localNext) => { localNext() },
         ({}, {}, localNext) => { localNext() },
-      ], anonymousError)
+      )
       handlers.forEach((handler, i) => handler(<any>{}, <any>{}, nextList[i]))
       expect(nextList[0]).toHaveBeenCalled()
       expect(nextList[1]).toHaveBeenCalled()
@@ -71,11 +73,12 @@ describe('anonymizeError middleware', () => {
       const error1 = new UnauthorizedAPIError(ErrorId.ActionUnauthorized)
       const error2 = new ForbiddenAPIError()
       const error3 = new BadRequestAPIError([ErrorId.PasswordEmpty])
-      const handlers = anonymizeError([
+      const handlers = anonymizeError(
+        anonymousError,
         ({}, {}, localNext) => { localNext(error1) },
         ({}, {}, localNext) => { localNext(error2) },
         ({}, {}, localNext) => { localNext(error3) },
-      ], anonymousError)
+      )
       handlers.forEach((handler, i) => handler(<any>{}, <any>{}, nextList[i]))
       expect(nextList[0]).toHaveBeenCalledWith(anonymousError)
       expect(nextList[1]).toHaveBeenCalledWith(anonymousError)
