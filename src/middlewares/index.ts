@@ -1,3 +1,4 @@
+export * from '@/middlewares/anonymizeErrorMiddleware'
 export * from '@/middlewares/authorizeMiddleware'
 export * from '@/middlewares/castErrorMiddleware'
 export * from '@/middlewares/findUserByEmailMiddleware'
