@@ -16,6 +16,6 @@ export const findUserByEmail: EmailRequestHandler = async (request, response, ne
     next()
   } catch (e) {
     findUserByEmailLogger.error(e)
-    next(new UnauthorizedAPIError())
+    next(e)
   }
 }
