@@ -32,3 +32,6 @@ export type AuthorizationDeleteRequestHandler = RequestHandler<{}, Authorization
 
 export type EmailRequestBody = { email: string }
 export type EmailRequestHandler = RequestHandler<{}, {}, EmailRequestBody>
+
+export type PasswordRequestBody = { password: string }
+export type PasswordRequestHandler = RequestHandler<{}, {}, PasswordRequestBody>
