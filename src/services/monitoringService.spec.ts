@@ -4,7 +4,6 @@ import { UserModel } from '@/models'
 
 describe('monitoring service', () => {
   
-  const loggerErrorSpy = jest.spyOn(monitoringLogger, 'error')
   const loggerPassSpy = jest.spyOn(monitoringLogger, 'pass')
   const next = jest.fn()
   const response: any = {
@@ -15,8 +14,8 @@ describe('monitoring service', () => {
     },
   }
   
-  beforeEach(() => {
-    jest.resetAllMocks()
+  afterEach(() => {
+    jest.clearAllMocks()
   })
   
   describe('::ping', () => {
@@ -24,7 +23,6 @@ describe('monitoring service', () => {
     it('should not ping', async () => {
       ping(<any>{}, response, next)
       expect(next).toHaveBeenCalledWith(new UnauthorizedAPIError(ErrorId.UserMandatory))
-      expect(loggerErrorSpy).toHaveBeenCalledWith(new UnauthorizedAPIError(ErrorId.UserMandatory))
       expect(response.statusCode).not.toStrictEqual(200)
       expect(response.json).not.toHaveBeenCalled()
     })

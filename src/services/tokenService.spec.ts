@@ -43,10 +43,12 @@ describe('token service', () => {
   beforeEach(async () => {
     // @ts-ignore
     env['jwtSecret'] = 'secret'
-    loggerPassSpy.mockClear()
-    next.mockClear()
     response.status(0)
     await TokenModel.deleteMany().exec()
+  })
+  
+  afterEach(() => {
+    jest.clearAllMocks()
   })
   
   describe('::encodeToken', () => {

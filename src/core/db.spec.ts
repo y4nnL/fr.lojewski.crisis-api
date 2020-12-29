@@ -16,7 +16,8 @@ describe('db core', () => {
   const loggerErrorSpy = jest.spyOn(dbLogger, 'error')
   const loggerPassSpy = jest.spyOn(dbLogger, 'pass')
   
-  beforeEach(() => {
+  afterEach(() => {
+    // mongooseSetSpy must not be cleared
     loggerDebugSpy.mockClear()
     loggerErrorSpy.mockClear()
     loggerPassSpy.mockClear()

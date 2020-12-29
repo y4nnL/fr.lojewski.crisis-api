@@ -71,9 +71,11 @@ describe('verifySignature middleware', () => {
   beforeEach(() => {
     // @ts-ignore
     env['sshKeys'] = []
-    loggerPassSpy.mockClear()
-    next.mockClear()
     request.headers = {}
+  })
+  
+  afterEach(() => {
+    jest.clearAllMocks()
   })
   
   it('should reject an unknown signature id', () => {

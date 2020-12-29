@@ -9,9 +9,7 @@ describe('anonymizeError middleware', () => {
   const nextList = [ jest.fn(), jest.fn(), jest.fn() ]
   
   afterEach(() => {
-    loggerErrorSpy.mockClear()
-    next.mockClear()
-    nextList.forEach((next) => next.mockClear())
+    jest.clearAllMocks()
   })
   
   describe('as a single middleware', () => {

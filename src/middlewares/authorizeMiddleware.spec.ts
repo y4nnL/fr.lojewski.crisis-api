@@ -13,8 +13,11 @@ describe('Authorize middleware', () => {
   const response: any = {}
   
   beforeEach(() => {
-    next.mockClear()
     request = {}
+  })
+  
+  afterEach(() => {
+    next.mockClear()
   })
   
   it('should expect a user', async () => {

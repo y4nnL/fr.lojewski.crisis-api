@@ -1,4 +1,4 @@
-import { BadRequestAPIError, ErrorId, NotFoundAPIError, UnauthorizedAPIError } from '@/types'
+import { BadRequestAPIError, ErrorId, NotFoundAPIError } from '@/types'
 import { connect, disconnect } from '~/helpers/db'
 import { findUserByEmail, findUserByEmailLogger } from './findUserByEmailMiddleware'
 import { User, UserDocument, UserModel } from '@/models/User'
@@ -14,7 +14,6 @@ describe('findUserByEmail middleware', () => {
   
   beforeAll(async () => {
     await connect()
-    await UserModel.deleteMany().exec()
     await UserModel.create({ email } as User as UserDocument)
   })
   
@@ -23,8 +22,11 @@ describe('findUserByEmail middleware', () => {
   })
   
   beforeEach(() => {
-    next.mockClear()
     request = {}
+  })
+  
+  afterEach(() => {
+    next.mockClear()
   })
   
   it('should throw on empty body', async () => {

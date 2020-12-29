@@ -46,15 +46,16 @@ describe('findUserByToken middleware', () => {
   })
   
   beforeEach(() => {
-    loggerPassSpy.mockClear()
-    next.mockClear()
     request.headers = {}
+  })
+  
+  afterEach(() => {
+    jest.clearAllMocks()
   })
   
   it('should throw on empty authorization', async () => {
     await findUserByToken(request, response, next)
     expect(next).toHaveBeenCalledWith(new BadRequestAPIError([ ErrorId.AuthorizationNotFound ]))
-    jest.resetAllMocks()
     request.headers['x-authorization'] = 'unknown'
     await findUserByToken(request, response, next)
     expect(next).toHaveBeenCalledWith(new BadRequestAPIError([ ErrorId.AuthorizationNotFound ]))

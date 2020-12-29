@@ -24,13 +24,8 @@ describe('logger util', () => {
   // @ts-ignore
   const consoleSpy = jest.spyOn(console._stdout, 'write')
   
-  beforeEach(() => {
-    debugSpy.mockClear()
-    infoSpy.mockClear()
-    passSpy.mockClear()
-    warnSpy.mockClear()
-    errorSpy.mockClear()
-    consoleSpy.mockClear()
+  afterEach(() => {
+    jest.clearAllMocks()
   })
   
   it('should log to console in dev mode', () => {
@@ -113,7 +108,6 @@ describe('logger util', () => {
       expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining(
         `[${ serviceName }] \u001b[33minfo\u001b[39m: \n[\n  [0] \u001b[38;2;106;135;89mitem\u001b[39m,\n]\r\n`))
       // Nested
-      consoleSpy.mockClear()
       logger.info([ [ 'item1', 'item2' ] ])
       expect(consoleSpy).toHaveBeenCalledWith(expect.stringMatching(dateRegExp))
       expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining([
@@ -138,7 +132,6 @@ describe('logger util', () => {
         `  \u001b[38;2;152;118;170mproperty\u001b[39m: \u001b[38;2;106;135;89mvalue\u001b[39m,\n}\r\n`
       ].join('')))
       // Mongoose ObjectId special case
-      consoleSpy.mockClear()
       const id = new mongoose.Types.ObjectId()
       logger.info(id)
       expect(consoleSpy).toHaveBeenCalledWith(expect.stringMatching(dateRegExp))
@@ -176,7 +169,6 @@ describe('logger util', () => {
         `  \u001b[38;2;152;118;170mproperty\u001b[39m: \u001b[38;2;106;135;89mvalue\u001b[39m,\n}\r\n`
       ].join('')))
       // Nested
-      consoleSpy.mockClear()
       logger.info({ object: { propertyA: 'valueA', propertyB: 'valueB' } })
       expect(consoleSpy).toHaveBeenCalledWith(expect.stringMatching(dateRegExp))
       expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining([
@@ -226,7 +218,6 @@ describe('logger util', () => {
       `  \u001b[38;2;152;118;170mname\u001b[39m: \u001b[38;2;106;135;89mAPIError\u001b[39m,\n`,
       `  \u001b[38;2;152;118;170mstatusCode\u001b[39m: \u001b[38;2;104;151;187m500\u001b[39m,\n}\r\n`,
     ].join('')))
-    consoleSpy.mockClear()
     logger.error({ message: new APIError(500, 'error') })
     expect(consoleSpy).toHaveBeenCalledWith(expect.stringMatching(dateRegExp))
     expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining([

@@ -7,12 +7,12 @@ describe('handleNotFound middleware', () => {
   let response: any
   
   const error = new APIError(500, 'error')
+  const loggerErrorSpy = jest.spyOn(handleErrorLogger, 'error')
   const method = 'GET'
   const next = jest.fn()
   const request: any = { originalUrl: '/endpoint', method }
   
   beforeEach(() => {
-    jest.resetAllMocks()
     error.statusCode = 500
     error.stack = 'stack'
     response = {
@@ -21,14 +21,17 @@ describe('handleNotFound middleware', () => {
     }
   })
   
+  afterEach(() => {
+    jest.clearAllMocks()
+  })
+  
   it('should set the json response and statusCode', () => {
-    const loggerSpy = jest.spyOn(handleErrorLogger, 'error')
     // @ts-ignore
     env['isProduction'] = false
     handleError(error, request, response, next)
     expect(response.statusCode).toStrictEqual(500)
     expect(response.json).toHaveBeenCalledWith({ message: error.toString(), stack: error.stack })
-    expect(loggerSpy.mock.calls).toEqual([
+    expect(loggerErrorSpy.mock.calls).toEqual([
       [ `Finished ${ request.method } ${ request.originalUrl } ${ error }` ],
       [ error.stack ],
     ])
@@ -43,12 +46,11 @@ describe('handleNotFound middleware', () => {
   })
   
   it('should have no stack', () => {
-    const loggerSpy = jest.spyOn(handleErrorLogger, 'error')
     error.stack = ''
     handleError(error, request, response, next)
     expect(response.statusCode).toStrictEqual(500)
     expect(response.json).toHaveBeenCalledWith({ message: error.toString() })
-    expect(loggerSpy.mock.calls).toEqual([
+    expect(loggerErrorSpy.mock.calls).toEqual([
       [ `Finished ${ request.method } ${ request.originalUrl } ${ error }` ],
     ])
   })
