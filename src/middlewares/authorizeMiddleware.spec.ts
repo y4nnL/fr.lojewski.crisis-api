@@ -6,16 +6,15 @@ import { userService } from '@/services'
 describe('Authorize middleware', () => {
   
   let request: any
-  let userMandatoryError: UnauthorizedAPIError
-  let unauthorizedActionError: ForbiddenAPIError
+  let userMandatoryError = new UnauthorizedAPIError(ErrorId.UserMandatory)
+  let unauthorizedActionError = new ForbiddenAPIError(ErrorId.ActionUnauthorized)
   
-  const next: any = jest.fn()
+  const next = jest.fn()
   const response: any = {}
   
   beforeEach(() => {
+    next.mockClear()
     request = {}
-    userMandatoryError = new UnauthorizedAPIError(ErrorId.UserMandatory)
-    unauthorizedActionError = new ForbiddenAPIError(ErrorId.ActionUnauthorized)
   })
   
   it('should expect a user', async () => {

@@ -23,6 +23,6 @@ export const findUserByToken: RequestHandler = async (request, response, next) =
     next()
   } catch (e) {
     findUserByTokenLogger.error(e)
-    next(new UnauthorizedAPIError())
+    next(e)
   }
 }
