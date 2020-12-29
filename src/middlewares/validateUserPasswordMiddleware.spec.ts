@@ -20,6 +20,9 @@ describe('validateUserPassword middleware', () => {
   })
   
   it('should throw on no valid body password', async () => {
+    request.body = null
+    await validateUserPassword(request, response, next)
+    expect(next).toHaveBeenCalledWith(new BadRequestAPIError([ ErrorId.PasswordRequired ]))
     request.body = { password: 42 }
     await validateUserPassword(request, response, next)
     expect(next).toHaveBeenCalledWith(new BadRequestAPIError([ ErrorId.PasswordRequired ]))

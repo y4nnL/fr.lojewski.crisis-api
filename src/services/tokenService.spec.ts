@@ -96,15 +96,6 @@ describe('token service', () => {
       expect(next).toHaveBeenCalledWith(new UnauthorizedAPIError(ErrorId.UserMandatory))
     })
     
-    it('should throw on a password mismatch', async () => {
-      const request: any = {
-        user: { password: await bcrypt.hash('password', 10) },
-        body: { password: 'mismatch' },
-      }
-      await service.createAuthorizationToken(request, response, next)
-      expect(next).toHaveBeenCalledWith(new UnauthorizedAPIError(ErrorId.PasswordMismatch))
-    })
-    
     it('should create an authorization token', async () => {
       const request: any = {
         user: await userDocument,

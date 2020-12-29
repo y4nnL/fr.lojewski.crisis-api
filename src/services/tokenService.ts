@@ -38,16 +38,15 @@ export const decodeToken = (signedToken: string, maxAge: TokenDuration): string 
 export const createAuthorizationToken: AuthorizationCreateRequestHandler = async (request, response, next) => {
   try {
     assert.ok(request.user, new UnauthorizedAPIError(ErrorId.UserMandatory))
-    assert.ok(await isUserPasswordValid(request.user, request.body.password),
-      new UnauthorizedAPIError(ErrorId.PasswordMismatch))
-    const authorizationToken = await TokenModel.create({
+    const token: Token = {
       token: uuidV4(),
       type: TokenType.Authorization,
       userId: request.user._id,
-    } as Token as TokenDocument)
+    }
+    const tokenDocument = await TokenModel.create(token as TokenDocument)
     tokenLogger.pass(`Created an authorization token for ${ request.user }`)
     response.status(200)
-      .json({ token: encodeToken(authorizationToken.token, TokenDuration.Authorization) })
+      .json({ token: encodeToken(tokenDocument.token, TokenDuration.Authorization) })
   } catch (e) {
     tokenLogger.error(e)
     next(e)
