@@ -1,5 +1,5 @@
 import { ErrorId } from '@/types'
-import { Joi, schema } from 'express-validation'
+import { Joi } from 'express-validation'
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Types
@@ -31,7 +31,7 @@ export const joiPassword = Joi
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Validations
 
-export const authorizationCreateSchema: schema = {
+export const authorizationCreateSchema = {
   body: Joi.object({
     email: joiEmail.required().messages({ 'any.required': ErrorId.EmailRequired }),
     password: joiPassword.required().messages({ 'any.required': ErrorId.PasswordRequired }),

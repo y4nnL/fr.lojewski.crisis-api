@@ -7,9 +7,9 @@ import {
   BadRequestAPIError,
   ErrorId,
   ForbiddenAPIError,
-  joiPasswordRegex,
   NotFoundAPIError,
-  UnauthorizedAPIError, UserAction,
+  UnauthorizedAPIError,
+  UserAction,
 } from '@/types'
 import { connect, disconnect } from '~/helpers/db'
 import { getSignatureHeaders } from '~/helpers/utils'
@@ -61,26 +61,11 @@ describe('token routes', () => {
     jest.clearAllMocks()
   })
   
-  it('::joiPasswordRegex', () => {
-    const chars = [ 'a', 'A', '1', '!' ]
-    chars.forEach((one) => {
-      chars.forEach((two) => {
-        chars.forEach((three) => {
-          chars.forEach((four) => {
-            one != two && one != three && one != four && two != three && two != four && three != four ?
-              expect(joiPasswordRegex.test(one + two + three + four)).toStrictEqual(true) :
-              expect(joiPasswordRegex.test(one + two + three + four)).toStrictEqual(false)
-          })
-        })
-      })
-    });
-  })
-  
   describe('/authorization post', () => {
     
     describe('1. validate(authorizationCreateSchema, {}, { abortEarly: false })', () => {
       
-      it('should not pass [EmailRequired]', async () => {
+      it('should not pass [EmailRequired;PasswordRequired]', async () => {
         const response = await postAuthorization(null)
         expect(response.status).toStrictEqual(400)
         expect(response.body.message).toStrictEqual(new BadRequestAPIError([
@@ -88,76 +73,6 @@ describe('token routes', () => {
           ErrorId.PasswordRequired,
         ]).toString())
       })
-      
-      it('should not pass [EmailNotString]', async () => {
-        const response = await postAuthorization({ email: 42 })
-        expect(response.status).toStrictEqual(400)
-        expect(response.body.message).toStrictEqual(new BadRequestAPIError([
-          ErrorId.EmailNotString,
-          ErrorId.PasswordRequired,
-        ]).toString())
-      })
-      
-      it('should not pass [EmailEmpty]', async () => {
-        const response = await postAuthorization({ email: '' })
-        expect(response.status).toStrictEqual(400)
-        expect(response.body.message).toStrictEqual(new BadRequestAPIError([
-          ErrorId.EmailEmpty,
-          ErrorId.PasswordRequired,
-        ]).toString())
-      })
-      
-      it('should not pass [EmailMalformed]', async () => {
-        const response = await postAuthorization({ email: '42' })
-        expect(response.status).toStrictEqual(400)
-        expect(response.body.message).toStrictEqual(new BadRequestAPIError([
-          ErrorId.EmailMalformed,
-          ErrorId.PasswordRequired,
-        ]).toString())
-      })
-      
-      it('should not pass [PasswordRequired]', async () => {
-        const response = await postAuthorization({ email })
-        expect(response.status).toStrictEqual(400)
-        expect(response.body.message).toStrictEqual(new BadRequestAPIError([ ErrorId.PasswordRequired ]).toString())
-      })
-      
-      it('should not pass [PasswordNotString]', async () => {
-        const response = await postAuthorization({ email, password: 42 })
-        expect(response.status).toStrictEqual(400)
-        expect(response.body.message).toStrictEqual(new BadRequestAPIError([ ErrorId.PasswordNotString ]).toString())
-      })
-      
-      it('should not pass [PasswordEmpty]', async () => {
-        const response = await postAuthorization({ email, password: '' })
-        expect(response.status).toStrictEqual(400)
-        expect(response.body.message).toStrictEqual(new BadRequestAPIError([ ErrorId.PasswordEmpty ]).toString())
-      })
-      
-      it('should not pass [PasswordTooShort]', async () => {
-        const response = await postAuthorization({ email, password: '42' })
-        expect(response.status).toStrictEqual(400)
-        expect(response.body.message).toStrictEqual(new BadRequestAPIError([
-          ErrorId.PasswordTooShort,
-          ErrorId.PasswordMalformed,
-        ]).toString())
-      })
-      
-      it('should not pass [PasswordTooLong]', async () => {
-        const response = await postAuthorization({ email, password: '012345678901234567890123456789' })
-        expect(response.status).toStrictEqual(400)
-        expect(response.body.message).toStrictEqual(new BadRequestAPIError([
-          ErrorId.PasswordTooLong,
-          ErrorId.PasswordMalformed,
-        ]).toString())
-      })
-      
-      it('should not pass [PasswordMalformed]', async () => {
-        const response = await postAuthorization({ email, password: 'aaaaaaaa' })
-        expect(response.status).toStrictEqual(400)
-        expect(response.body.message).toStrictEqual(new BadRequestAPIError([ ErrorId.PasswordMalformed ]).toString())
-      })
-      
     })
     
     describe('2. findUserByEmail', () => {

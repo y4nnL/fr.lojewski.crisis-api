@@ -33,5 +33,43 @@ export const getSignatureHeaders = async (): Promise<object> => {
   return headers
 }
 
+class MyClass {
+  property = 'value'
+}
+
+type Type = {
+  array: any[]
+  boolean: true
+  class: MyClass
+  date: Date
+  null: null
+  number: number
+  object: object
+  regexp: RegExp
+  string: string
+  symbol: Symbol
+  undefined: undefined
+}
+
+export const omitTypes = <K extends keyof Type>(omit?: K[]): Type => {
+  const types: Type = {
+    array: [ 'item' ],
+    boolean: true,
+    class: new MyClass(),
+    date: new Date(),
+    null: null,
+    number: 42,
+    object: { property: 'value' },
+    regexp: /42/,
+    string: 'string',
+    symbol: Symbol(42),
+    undefined: undefined,
+  }
+  if (omit) {
+    omit.forEach((type) => delete types[type])
+  }
+  return types
+}
+
 
 

@@ -43,10 +43,11 @@ export const createAuthorizationToken: AuthorizationCreateRequestHandler = async
       type: TokenType.Authorization,
       userId: request.user._id,
     }
-    const tokenDocument = await TokenModel.create(token as TokenDocument)
+    const encodedToken = encodeToken(token.token, TokenDuration.Authorization)
+    await TokenModel.create(token as TokenDocument)
     tokenLogger.pass(`Created an authorization token for ${ request.user }`)
     response.status(200)
-      .json({ token: encodeToken(tokenDocument.token, TokenDuration.Authorization) })
+      .json({ token: encodedToken })
   } catch (e) {
     tokenLogger.error(e)
     next(e)
