@@ -17,7 +17,7 @@ export const authorize = (action: UserAction, ...actions: UserAction[]): Request
       authorizeLogger.pass(`${ user } is authorized to perform ${ actions }`)
       next()
     } catch (e) {
-      authorizeLogger.debug(e)
+      authorizeLogger.error(e)
       next(e)
     }
   }

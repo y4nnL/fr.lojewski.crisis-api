@@ -13,7 +13,7 @@ function anonymizeError(anonymousError: APIError, ...requestHandlers: RH[]): RH 
     (request: Request, response: Response, next: NextFunction) => {
       handler(request, response, (error?: any) => {
         if (error) {
-          anonymizeErrorLogger.error(error)
+          anonymizeErrorLogger.pass(`Replaced ${ error } with ${ anonymousError }`)
           next(anonymousError)
         } else {
           next()

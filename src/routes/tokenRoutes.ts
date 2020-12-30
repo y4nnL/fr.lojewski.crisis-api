@@ -1,17 +1,22 @@
 import express from 'express'
 import * as middleware from '@/middlewares'
 import * as tokenService from '@/services/tokenService'
-import { authorizationCreateSchema, UserAction } from '@/types'
+import { authorizationCreateSchema, UnauthorizedAPIError, UserAction } from '@/types'
 import { validate } from 'express-validation'
 
 const router = express.Router()
+const unauthorized = new UnauthorizedAPIError()
 
 router.route('/authorization')
   .post(
     validate(authorizationCreateSchema, {}, { abortEarly: false }),
-    middleware.findUserByEmail,
-    middleware.authorize(UserAction.TokenAuthorizationCreate),
-    tokenService.createAuthorizationToken,
+    ...middleware.anonymizeError(
+      unauthorized,
+      middleware.findUserByEmail,
+      middleware.validateUserPassword,
+      middleware.authorize(UserAction.TokenAuthorizationCreate),
+      tokenService.createAuthorizationToken,
+    ),
   )
   .delete(
     middleware.findUserByToken,

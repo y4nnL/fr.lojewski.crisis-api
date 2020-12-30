@@ -4,7 +4,7 @@ import { APIError, BadRequestAPIError, ErrorId, ForbiddenAPIError, UnauthorizedA
 describe('anonymizeError middleware', () => {
   
   const anonymousError = new APIError(500, 'Error')
-  const loggerErrorSpy = jest.spyOn(anonymizeErrorLogger, 'error')
+  const loggerPassSpy = jest.spyOn(anonymizeErrorLogger, 'pass')
   const next = jest.fn()
   const nextList = [ jest.fn(), jest.fn(), jest.fn() ]
   
@@ -18,14 +18,14 @@ describe('anonymizeError middleware', () => {
       const handler = anonymizeError(anonymousError, () => {})
       handler(<any>{}, <any>{}, next)
       expect(next).not.toHaveBeenCalled()
-      expect(loggerErrorSpy).not.toHaveBeenCalled()
+      expect(loggerPassSpy).not.toHaveBeenCalled()
     })
   
     it('should not next any errors', () => {
       const handler = anonymizeError(anonymousError, ({}, {}, localNext) => { localNext() })
       handler(<any>{}, <any>{}, next)
       expect(next).toHaveBeenCalledWith()
-      expect(loggerErrorSpy).not.toHaveBeenCalled()
+      expect(loggerPassSpy).not.toHaveBeenCalled()
     })
   
     it('should next the anonymous error', () => {
@@ -33,7 +33,7 @@ describe('anonymizeError middleware', () => {
       const handler = anonymizeError(anonymousError, ({}, {}, localNext) => { localNext(error) })
       handler(<any>{}, <any>{}, next)
       expect(next).toHaveBeenCalledWith(anonymousError)
-      expect(loggerErrorSpy).toHaveBeenCalledWith(error)
+      expect(loggerPassSpy).toHaveBeenCalledWith(`Replaced ${ error } with ${ anonymousError }`)
     })
     
   })
@@ -51,7 +51,7 @@ describe('anonymizeError middleware', () => {
       expect(nextList[0]).not.toHaveBeenCalled()
       expect(nextList[1]).not.toHaveBeenCalled()
       expect(nextList[2]).not.toHaveBeenCalled()
-      expect(loggerErrorSpy).not.toHaveBeenCalled()
+      expect(loggerPassSpy).not.toHaveBeenCalled()
     })
   
     it('should not next any errors', () => {
@@ -65,7 +65,7 @@ describe('anonymizeError middleware', () => {
       expect(nextList[0]).toHaveBeenCalled()
       expect(nextList[1]).toHaveBeenCalled()
       expect(nextList[2]).toHaveBeenCalled()
-      expect(loggerErrorSpy).not.toHaveBeenCalled()
+      expect(loggerPassSpy).not.toHaveBeenCalled()
     })
   
     it('should next the anonymous error', () => {
@@ -83,7 +83,11 @@ describe('anonymizeError middleware', () => {
       expect(nextList[0]).toHaveBeenCalledWith(anonymousError)
       expect(nextList[1]).toHaveBeenCalledWith(anonymousError)
       expect(nextList[2]).toHaveBeenCalledWith(anonymousError)
-      expect(loggerErrorSpy.mock.calls).toEqual([ [ error1 ], [ error2 ], [ error3 ] ])
+      expect(loggerPassSpy.mock.calls).toEqual([
+        [ `Replaced ${ error1 } with ${ anonymousError }` ],
+        [ `Replaced ${ error2 } with ${ anonymousError }` ],
+        [ `Replaced ${ error3 } with ${ anonymousError }` ]
+      ])
     })
     
   })
