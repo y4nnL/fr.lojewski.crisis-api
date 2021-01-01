@@ -3,6 +3,7 @@ export interface Env {
   readonly debug: boolean
   readonly isDevelopment: boolean
   readonly isProduction: boolean
+  readonly isTest: boolean
   readonly jwtSecret: string
   readonly mode: string
   readonly pathCert: string

@@ -22,8 +22,7 @@ function anonymizeError(anonymousError: APIError, ...requestHandlers: RH[]): RH 
     }
   
   return requestHandlers.length === 1 ?
-    buildHandler(requestHandlers[0]) :
-    requestHandlers.map<RH>(buildHandler)
+    buildHandler(requestHandlers[0]) : requestHandlers.map<RH>(buildHandler)
 }
 
 export { anonymizeError }

@@ -17,6 +17,7 @@ const env: Env = {
   debug: process.env.DEBUG === 'true',
   isDevelopment: process.env.NODE_ENV === 'development',
   isProduction: process.env.NODE_ENV === 'production',
+  isTest: process.env.NODE_ENV === 'test',
   jwtSecret: process.env.JWT_SECRET,
   mode: process.env.NODE_ENV,
   pathCert: process.env.PATH_CERT,

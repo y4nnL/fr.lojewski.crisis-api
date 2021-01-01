@@ -16,6 +16,7 @@ describe('logger util', () => {
   const serviceName = 'logger'
   const dateRegExp = /^\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+([+-][0-2]\d:[0-5]\d|Z)/
   const logger = createLogger(serviceName)
+  const sillySpy = jest.spyOn(logger, 'silly')
   const debugSpy = jest.spyOn(logger, 'debug')
   const infoSpy = jest.spyOn(logger, 'info')
   const passSpy = jest.spyOn(logger, 'pass')
@@ -24,6 +25,15 @@ describe('logger util', () => {
   // @ts-ignore
   const consoleSpy = jest.spyOn(console._stdout, 'write')
   
+  beforeEach(() => {
+    // @ts-ignore
+    env['isTest'] = true
+    // @ts-ignore
+    env['isDevelopment'] = false
+    // @ts-ignore
+    env['isProduction'] = false
+  })
+  
   afterEach(() => {
     jest.clearAllMocks()
   })
@@ -31,15 +41,31 @@ describe('logger util', () => {
   it('should log to console in dev mode', () => {
     // @ts-ignore
     env['isProduction'] = false
+    // @ts-ignore
+    env['isTest'] = false
+    // @ts-ignore
+    env['isDevelopment'] = true
     const localLogger = createLogger(serviceName)
-    const level = 'info'
+    const level = 'debug'
     const message = 'ok'
-    const localInfoSpy = jest.spyOn(localLogger, level)
+    const localSpy = jest.spyOn(localLogger, level)
     localLogger[level](message)
-    expect(localInfoSpy).toHaveBeenCalledWith(message)
+    expect(localSpy).toHaveBeenCalledWith(message)
     expect(consoleSpy).toHaveBeenCalledWith(expect.stringMatching(dateRegExp))
     expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining(
-      `[${ serviceName }] \u001b[33m${ level }\u001b[39m: \u001b[38;2;106;135;89m${ message }\u001b[39m`))
+      `[${ serviceName }] \u001b[36m${ level }\u001b[39m: \u001b[38;2;106;135;89m${ message }\u001b[39m`))
+  })
+  
+  it('should log to console in test mode', () => {
+    const localLogger = createLogger(serviceName)
+    const level = 'silly'
+    const message = 'ok'
+    const localSpy = jest.spyOn(localLogger, level)
+    localLogger[level](message)
+    expect(localSpy).toHaveBeenCalledWith(message)
+    expect(consoleSpy).toHaveBeenCalledWith(expect.stringMatching(dateRegExp))
+    expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining(
+      `[${ serviceName }] \u001b[37m${ level }\u001b[39m: \u001b[38;2;106;135;89m${ message }\u001b[39m`))
   })
   
   it('should log to files in prod mode', async () => {
@@ -48,11 +74,11 @@ describe('logger util', () => {
     const localLogger = createLogger(serviceName)
     const level = 'info'
     const message = 'loggerUnitTest.' + new Date().toISOString()
-    const localInfoSpy = jest.spyOn(localLogger, level)
+    const localSpy = jest.spyOn(localLogger, level)
     const combinedPath = path.resolve(__dirname, '../../logs/combined.log')
     const errorPath = path.resolve(__dirname, '../../logs/error.log')
     localLogger[level](message)
-    expect(localInfoSpy).toHaveBeenCalledWith(message)
+    expect(localSpy).toHaveBeenCalledWith(message)
     // Wait for the files to be created or updated
     await sleep(1)
     expect(fs.existsSync(combinedPath)).toStrictEqual(true)
@@ -72,31 +98,35 @@ describe('logger util', () => {
   
   it('should have different level colors', () => {
     const message = 'ok'
+    logger.silly(message)
     logger.debug(message)
     logger.info(message)
     logger.pass(message)
     logger.warn(message)
     logger.error(message)
+    expect(sillySpy).toHaveBeenCalledWith(message)
     expect(debugSpy).toHaveBeenCalledWith(message)
     expect(infoSpy).toHaveBeenCalledWith(message)
     expect(passSpy).toHaveBeenCalledWith(message)
     expect(warnSpy).toHaveBeenCalledWith(message)
     expect(errorSpy).toHaveBeenCalledWith(message)
-    console.warn(consoleSpy.mock.calls)
     expect(consoleSpy.mock.calls[0][0]).toMatch(dateRegExp)
     expect(consoleSpy.mock.calls[0][0]).toContain(
-      `[${ serviceName }] \u001b[36mdebug\u001b[39m: \u001b[38;2;106;135;89m${ message }\u001b[39m`)
+      `[${ serviceName }] \u001b[37msilly\u001b[39m: \u001b[38;2;106;135;89m${ message }\u001b[39m`)
     expect(consoleSpy.mock.calls[1][0]).toMatch(dateRegExp)
     expect(consoleSpy.mock.calls[1][0]).toContain(
-      `[${ serviceName }] \u001b[33minfo\u001b[39m: \u001b[38;2;106;135;89m${ message }\u001b[39m`)
+      `[${ serviceName }] \u001b[36mdebug\u001b[39m: \u001b[38;2;106;135;89m${ message }\u001b[39m`)
     expect(consoleSpy.mock.calls[2][0]).toMatch(dateRegExp)
     expect(consoleSpy.mock.calls[2][0]).toContain(
-      `[${ serviceName }] \u001b[32mpass\u001b[39m: \u001b[38;2;106;135;89m${ message }\u001b[39m`)
+      `[${ serviceName }] \u001b[33minfo\u001b[39m: \u001b[38;2;106;135;89m${ message }\u001b[39m`)
     expect(consoleSpy.mock.calls[3][0]).toMatch(dateRegExp)
     expect(consoleSpy.mock.calls[3][0]).toContain(
-      `[${ serviceName }] \u001b[38;2;255;165;0mwarn\u001b[39m: \u001b[38;2;106;135;89m${ message }\u001b[39m`)
+      `[${ serviceName }] \u001b[32mpass\u001b[39m: \u001b[38;2;106;135;89m${ message }\u001b[39m`)
     expect(consoleSpy.mock.calls[4][0]).toMatch(dateRegExp)
     expect(consoleSpy.mock.calls[4][0]).toContain(
+      `[${ serviceName }] \u001b[38;2;255;165;0mwarn\u001b[39m: \u001b[38;2;106;135;89m${ message }\u001b[39m`)
+    expect(consoleSpy.mock.calls[5][0]).toMatch(dateRegExp)
+    expect(consoleSpy.mock.calls[5][0]).toContain(
       `[${ serviceName }] \u001b[31merror\u001b[39m: \u001b[38;2;106;135;89m${ message }\u001b[39m`)
   })
   

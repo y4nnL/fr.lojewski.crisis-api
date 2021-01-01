@@ -5,8 +5,8 @@ import path from 'path'
 import { exec } from 'child_process'
 import { v4 as uuidV4 } from 'uuid'
 
-export const sleep = async (time: number) =>
-  await new Promise((resolve) => setTimeout(resolve, time * 1000))
+export const sleep = async (time: number, callback?: () => any) =>
+  await new Promise((resolve) => setTimeout(() => resolve(callback ? callback(): null), time * 1000))
 
 export const getSignatureHeaders = async (): Promise<object> => {
   const id = uuidV4()

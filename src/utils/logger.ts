@@ -32,6 +32,8 @@ function typeOf(object: any): Type {
 
 function level(level: string) {
   switch (level) {
+    case 'silly':
+      return chalk.white(level)
     case 'debug':
       return chalk.cyan(level)
     case 'info':
@@ -119,8 +121,8 @@ export default function (service: string): Logger {
     })
   } else {
     return winston.createLogger({
-      level: 'debug',
-      levels: { error: 0, warn: 1, pass: 2, info: 3, debug: 4 },
+      level: env.isDevelopment ? 'debug' : 'silly',
+      levels: { error: 0, warn: 1, pass: 2, info: 3, debug: 4, silly: 5 },
       format: winston.format.combine(
         fixError(),
         winston.format.printf((info) =>
