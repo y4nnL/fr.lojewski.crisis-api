@@ -7,6 +7,7 @@ import nodeAssert from 'assert'
 
 interface Assert {
   ok(value: any, error?: Error): asserts value
+  isNull(value: any, error?: Error): asserts value is null
   isObject(value: any, error?: Error): asserts value is object
   isString(value: any, error?: Error): asserts value is string
 }
@@ -22,6 +23,9 @@ const _try = (fn: Function, error?: Error) => {
 const assert: Assert = {
   ok(value: any, error?: Error): asserts value {
     _try(() => nodeAssert(value), error)
+  },
+  isNull(value: any, error?: Error): asserts value is null {
+    _try(() => nodeAssert(value === null), error)
   },
   isObject(value: any, error?: Error): asserts value is object {
     _try(() => nodeAssert(value !== null && typeof value === 'object'), error)

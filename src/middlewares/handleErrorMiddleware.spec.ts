@@ -15,6 +15,7 @@ describe('handleNotFound middleware', () => {
   beforeEach(() => {
     error.statusCode = 500
     error.stack = 'stack'
+    request.startTime = new Date()
     response = {
       json: jest.fn(),
       status: (c: any) => response.statusCode = c
@@ -32,7 +33,7 @@ describe('handleNotFound middleware', () => {
     expect(response.statusCode).toStrictEqual(500)
     expect(response.json).toHaveBeenCalledWith({ message: error.toString(), stack: error.stack })
     expect(loggerErrorSpy.mock.calls).toEqual([
-      [ `Finished ${ request.method } ${ request.originalUrl } ${ error }` ],
+      [ expect.stringContaining(`Finished ${ request.method } ${ request.originalUrl } ${ error }`) ],
       [ error.stack ],
     ])
     // @ts-ignore
@@ -51,7 +52,7 @@ describe('handleNotFound middleware', () => {
     expect(response.statusCode).toStrictEqual(500)
     expect(response.json).toHaveBeenCalledWith({ message: error.toString() })
     expect(loggerErrorSpy.mock.calls).toEqual([
-      [ `Finished ${ request.method } ${ request.originalUrl } ${ error }` ],
+      [ expect.stringContaining(`Finished ${ request.method } ${ request.originalUrl } ${ error }`) ],
     ])
   })
   

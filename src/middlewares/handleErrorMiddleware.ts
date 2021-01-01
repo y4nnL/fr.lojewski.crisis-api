@@ -7,7 +7,8 @@ export const handleErrorLogger = createLogger('handleError')
 
 export const handleError: ErrorRequestHandler = (error: APIError, request, response, next) => {
   const json: any = { message: error.toString() }
-  handleErrorLogger.error(`Finished ${ request.method } ${ request.originalUrl } ${ error }`)
+  const finishTimeMS = new Date(new Date().getTime() - request.startTime.getTime()).getMilliseconds() / 1000
+  handleErrorLogger.error(`Finished ${ request.method } ${ request.originalUrl } ${ error } in ${ finishTimeMS }s`)
   if (error.stack) {
     handleErrorLogger.error(error.stack)
     if (!env.isProduction) {

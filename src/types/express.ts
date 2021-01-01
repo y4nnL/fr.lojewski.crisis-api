@@ -8,7 +8,7 @@ declare global {
   namespace Express {
     
     interface Request {
-      startTime?: Date
+      startTime: Date
       user?: UserDocument
     }
     

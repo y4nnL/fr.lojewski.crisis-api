@@ -2,9 +2,11 @@ import env from '@/utils/env'
 import fs from 'fs'
 import httpSignature from 'http-signature'
 import path from 'path'
+import { connect, disconnect } from '~/helpers/db'
 import { ErrorId, UnauthorizedAPIError } from '@/types'
 import { exec } from 'child_process'
 import { verifySignature, verifySignatureLogger } from '@/middlewares/verifySignatureMiddleware'
+import { sleep } from '~/helpers/utils'
 
 interface RSA {
   id: string
@@ -14,6 +16,9 @@ interface RSA {
 }
 
 describe('verifySignature middleware', () => {
+  
+  let lastAuthorization: string
+  let lastDate: string
   
   const loggerPassSpy = jest.spyOn(verifySignatureLogger, 'pass')
   const next = jest.fn()
@@ -42,6 +47,7 @@ describe('verifySignature middleware', () => {
   }
   
   beforeAll(async () => {
+    await connect()
     // RSA1 is good RSA key-pair
     await new Promise<void>((resolve, reject) =>
       exec(`ssh-keygen -t rsa -b 2048 -C "${ rsa1.pwd }" -N "${ rsa1.pwd }" -m PEM -f "${ rsa1.key }"`, (e) => {
@@ -68,6 +74,10 @@ describe('verifySignature middleware', () => {
       }))
   })
   
+  afterAll(async () => {
+    await disconnect()
+  })
+  
   beforeEach(() => {
     // @ts-ignore
     env['sshKeys'] = []
@@ -78,52 +88,75 @@ describe('verifySignature middleware', () => {
     jest.clearAllMocks()
   })
   
-  it('should reject an unknown signature id', () => {
+  it('should reject a malformed signature', async () => {
+    request.setHeader('authorization', 'malformed')
+    await verifySignature(request, response, next)
+    expect(next).toHaveBeenCalledWith(new UnauthorizedAPIError(ErrorId.SignatureMalformed))
+  })
+  
+  it('should reject an unknown signature id', async () => {
     httpSignature.sign(request, { key: rsa1.key, keyId: rsa1.id, keyPassphrase: rsa1.pwd })
-    verifySignature(request, response, next)
+    await verifySignature(request, response, next)
     expect(next).toHaveBeenCalledWith(new UnauthorizedAPIError(ErrorId.SignatureUnknown))
   })
   
-  it('should reject a not found signature pub', () => {
+  it('should reject a not found signature pub', async () => {
     // @ts-ignore
     env['sshKeys'] = [ rsa2.id ]
     httpSignature.sign(request, { key: rsa2.key, keyId: rsa2.id, keyPassphrase: rsa2.pwd })
-    verifySignature(request, response, next)
+    await verifySignature(request, response, next)
     expect(next).toHaveBeenCalledWith(new UnauthorizedAPIError(ErrorId.SignatureNotFound))
   })
   
-  it('should reject a wrong signature pub', () => {
+  it('should reject a wrong signature pub', async () => {
     // @ts-ignore
     env['sshKeys'] = [ rsa1.id ]
     httpSignature.sign(request, { key: rsa2.key, keyId: rsa1.id, keyPassphrase: rsa2.pwd })
-    verifySignature(request, response, next)
+    await verifySignature(request, response, next)
     expect(next).toHaveBeenCalledWith(new UnauthorizedAPIError(ErrorId.SignatureNotVerified))
   })
   
-  it('should reject a malformed signature pub', () => {
+  it('should reject a malformed signature pub', async () => {
     // @ts-ignore
     env['sshKeys'] = [ rsa3.id ]
     httpSignature.sign(request, { key: rsa3.key, keyId: rsa3.id, keyPassphrase: rsa3.pwd })
-    verifySignature(request, response, next)
+    await verifySignature(request, response, next)
     expect(next).toHaveBeenCalledWith(new UnauthorizedAPIError(ErrorId.SignatureNotVerified))
   })
   
-  it('should accept the only one authorized signature', () => {
+  it('should accept the only one verified signature', async () => {
     // @ts-ignore
     env['sshKeys'] = [ rsa1.id ]
     httpSignature.sign(request, { key: rsa1.key, keyId: rsa1.id, keyPassphrase: rsa1.pwd })
-    verifySignature(request, response, next)
+    console.log(request.getHeader('date'))
+    await verifySignature(request, response, next)
     expect(next).toHaveBeenCalledWith()
     expect(loggerPassSpy).toHaveBeenCalledWith(`Request [Signature ${ rsa1.id }] is verified`)
   })
   
-  it('should accept an authorized signature', () => {
+  it('should accept a verified signature', async () => {
+    // Date header is set with seconds not milliseconds
+    await sleep(1)
     // @ts-ignore
     env['sshKeys'] = [ rsa1.id, rsa2.id, rsa3.id ]
     httpSignature.sign(request, { key: rsa1.key, keyId: rsa1.id, keyPassphrase: rsa1.pwd })
-    verifySignature(request, response, next)
+    console.log(request.getHeader('date'))
+    await verifySignature(request, response, next)
+    lastAuthorization = request.getHeader('authorization')
+    lastDate = request.getHeader('date')
     expect(next).toHaveBeenCalledWith()
     expect(loggerPassSpy).toHaveBeenCalledWith(`Request [Signature ${ rsa1.id }] is verified`)
+  })
+  
+  it('should not authorize an already verified signature', async () => {
+    // Date header is set with seconds not milliseconds
+    await sleep(1)
+    // @ts-ignore
+    env['sshKeys'] = [ rsa1.id, rsa2.id, rsa3.id ]
+    request.setHeader('authorization', lastAuthorization)
+    request.setHeader('date', lastDate)
+    await verifySignature(request, response, next)
+    expect(next).toHaveBeenCalledWith(new UnauthorizedAPIError(ErrorId.SignatureAlreadyVerified))
   })
   
 })
