@@ -17,7 +17,7 @@ export const serverLogger = createLogger('server')
 const ca = fs.readFileSync(env.pathCertCA, 'ascii')
 const cert = fs.readFileSync(env.pathCert, 'ascii')
 const key = fs.readFileSync(env.pathCertKey, 'ascii')
-const server = https.createServer({ cert, ca, key }, app)
+const server = https.createServer({ ca, cert, key }, app)
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
@@ -32,7 +32,7 @@ export async function start(): Promise<boolean> {
   return new Promise((resolve, reject) => {
     try {
       server.listen(env.serverPort, () => {
-        serverLogger.pass(`Started on https://localhost:${ env.serverPort }/`)
+        serverLogger.pass(`Started https://localhost:${ env.serverPort }/`)
         resolve(true)
       })
     } catch (e) {
@@ -47,7 +47,7 @@ export async function stop(): Promise<boolean> {
       if (error) {
         reject(error)
       } else {
-        serverLogger.pass(`Stopped on https://localhost:${ env.serverPort }/`)
+        serverLogger.pass(`Stopped https://localhost:${ env.serverPort }/`)
         resolve(true)
       }
     })

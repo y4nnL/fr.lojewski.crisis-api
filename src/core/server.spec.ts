@@ -41,9 +41,9 @@ describe('server core', () => {
     const server = require('./server')
     const loggerSpy = jest.spyOn(server.serverLogger, 'pass')
     expect(await server.start()).toStrictEqual(true)
-    expect(loggerSpy).toHaveBeenCalledWith(`Started on https://localhost:${ env.serverPort }/`)
+    expect(loggerSpy).toHaveBeenCalledWith(`Started https://localhost:${ env.serverPort }/`)
     expect(await server.stop()).toStrictEqual(true)
-    expect(loggerSpy).toHaveBeenCalledWith(`Stopped on https://localhost:${ env.serverPort }/`)
+    expect(loggerSpy).toHaveBeenCalledWith(`Stopped https://localhost:${ env.serverPort }/`)
   })
   
   it('should not start twice', async () => {
