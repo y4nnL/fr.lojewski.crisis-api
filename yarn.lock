@@ -726,6 +726,13 @@
     "@types/mime" "*"
     "@types/node" "*"
 
+"@types/sshpk@^1.10.5":
+  version "1.10.5"
+  resolved "https://registry.yarnpkg.com/@types/sshpk/-/sshpk-1.10.5.tgz#d3c759da1c3bd93e82daf297b6309a93ad5bfa05"
+  integrity sha512-5EKeKE0YmM2F5xjhk5k6mgL9tx5XpHPqKVaN5c1zCBGSFv4VPRqp1fhGKjo1lkyb7kmvchjgWB8TPAT14+JiRg==
+  dependencies:
+    "@types/node" "*"
+
 "@types/stack-utils@^2.0.0":
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/@types/stack-utils/-/stack-utils-2.0.0.tgz#7036640b4e21cc2f259ae826ce843d277dad8cff"
@@ -4812,7 +4819,7 @@ sprintf-js@~1.0.2:
   resolved "https://registry.yarnpkg.com/sprintf-js/-/sprintf-js-1.0.3.tgz#04e6926f662895354f3dd015203633b857297e2c"
   integrity sha1-BOaSb2YolTVPPdAVIDYzuFcpfiw=
 
-sshpk@^1.14.1, sshpk@^1.7.0:
+sshpk@^1.14.1, sshpk@^1.16.1, sshpk@^1.7.0:
   version "1.16.1"
   resolved "https://registry.yarnpkg.com/sshpk/-/sshpk-1.16.1.tgz#fb661c0bef29b39db40769ee39fa70093d6f6877"
   integrity sha512-HXXqVUq7+pcKeLqqZj6mHFUMvXtOJt1uoUx09pFW6011inTMxqI8BA8PM95myrIyyKwdnzjdFjLiE6KBPVtJIg==
