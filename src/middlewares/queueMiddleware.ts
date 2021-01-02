@@ -21,13 +21,13 @@ export class Queue {
   }
   
   dequeue() {
-    queueLogger.silly('entering dequeue #' + (this.jobs.length) + ' jobs in queue')
+    queueLogger.silly('entering dequeue (' + (this.jobs.length) + ') jobs in queue')
     queueLogger.silly('removing listener & unlocking')
     this.response.off('finish', this.onResponseFinished)
     this.lock = false
     const job = this.jobs.shift()
     if (job) {
-      queueLogger.silly('dequeueing #1 of #' + (this.jobs.length + 1))
+      queueLogger.silly('dequeueing (1) of (' + (this.jobs.length + 1) + ')')
       this.requestHandlers[0](...job)
     } else {
       queueLogger.silly('no more queue')
@@ -37,29 +37,29 @@ export class Queue {
   private mapRequestHandlers(requestHandlers: RequestHandler[]) {
     return requestHandlers.map((handler, index) => {
       return (request: Request, response: Response, originalNext: NextFunction) => {
-        queueLogger.silly('entering handler #' + index)
+        queueLogger.silly('entering handler (' + index + ')')
         const next = (error?: any) => {
-          queueLogger.silly('entering next #' + index)
+          queueLogger.silly('entering next (' + index + ')')
           const isLast = typeof error !== 'undefined' || index === requestHandlers.length - 1
           if (isLast) {
-            queueLogger.silly('last handler #' + index + ' next')
+            queueLogger.silly('last handler (' + index + ') next')
             this.dequeue()
           }
           error ? originalNext(error) : originalNext()
         }
         if (index === 0) {
           if (this.lock) {
-            queueLogger.silly('locked, queueing in #' + (this.jobs.length + 1))
+            queueLogger.silly('locked, queueing in (' + (this.jobs.length + 1) + ')')
             this.jobs.push([ request, response, originalNext ])
           } else {
-            queueLogger.silly('listening & locking & processing handler #' + index)
+            queueLogger.silly('listening & locking & processing handler (' + index +')')
             response.on('finish', this.onResponseFinished)
             this.response = response
             this.lock = true
             handler(request, response, next)
           }
         } else {
-          queueLogger.silly('processing handler #' + index)
+          queueLogger.silly('processing handler (' + index + ')')
           handler(request, response, next)
         }
       }
