@@ -8,5 +8,6 @@ export default async () => {
   fs.mkdirSync(sshPath)
   dotenv.config()
   process.env.NODE_ENV = 'test'
+  process.env.SERVER_PORT = '9443'
   process.env.SSH_KEYS_PATH = sshPath
 };
