@@ -6,6 +6,21 @@ import { sleep } from '~/helpers/utils'
 
 describe('queue middleware', () => {
   
+  type MiddlewareName =
+      'firstHandler'
+    | 'lastHandler'
+    | 'queuedHandler1'
+    | 'queuedHandler2'
+    | 'queuedHandler2End'
+    | 'queuedHandler2Error'
+    | 'queuedHandler3'
+  
+  type URL =
+      '/single'
+    | '/multipleNext'
+    | '/multipleEnd'
+    | '/multipleError'
+  
   const singleCall = async (app: Application, url: URL) => await supertest(app).get(url + routerRoot)
   const multipleCall = async (app: Application, url: URL) => await Promise.all([
     supertest(app).get(url + routerRoot),
@@ -15,7 +30,7 @@ describe('queue middleware', () => {
   
   const app = express()
   const loggerSillySpy = jest.spyOn(queueLogger, 'silly')
-  const middleware: Record<any, RequestHandler> = {
+  const middleware: Record<MiddlewareName, RequestHandler> = {
     firstHandler: (request, response, next) => next(),
     queuedHandler1: async (request, response, next) => await sleep(.1, next),
     queuedHandler2: async (request, response, next) => await sleep(.1, next),
@@ -33,18 +48,12 @@ describe('queue middleware', () => {
   const queuedHandler2ErrorSpy = jest.spyOn(middleware, 'queuedHandler2Error')
   const queuedHandler3Spy = jest.spyOn(middleware, 'queuedHandler3')
   
-  type URL =
-      '/single'
-    | '/multipleNext'
-    | '/multipleEnd'
-    | '/multipleError'
-  
   const routerRoot = '/'
-  const routes: { url: URL, queue: string[] }[] = [
-    { url: '/single', queue: [ '1' ] },
-    { url: '/multipleNext', queue: [ '1', '2', '3' ] },
-    { url: '/multipleEnd', queue: [ '1', '2End', '3' ] },
-    { url: '/multipleError', queue: [ '1', '2Error', '3' ] },
+  const routes: { url: URL, queue: MiddlewareName[] }[] = [
+    { url: '/single', queue: [ 'queuedHandler1' ] },
+    { url: '/multipleNext', queue: [ 'queuedHandler1', 'queuedHandler2', 'queuedHandler3' ] },
+    { url: '/multipleEnd', queue: [ 'queuedHandler1', 'queuedHandler2End', 'queuedHandler3' ] },
+    { url: '/multipleError', queue: [ 'queuedHandler1', 'queuedHandler2Error', 'queuedHandler3' ] },
   ]
   
   routes.forEach((route) => {
@@ -52,7 +61,7 @@ describe('queue middleware', () => {
     router.route(routerRoot)
       .get(
         middleware.firstHandler,
-        queue(...route.queue.map((suffix) => middleware['queuedHandler' + suffix])),
+        queue(...route.queue.map((name) => middleware[name])),
         middleware.lastHandler,
       )
     app.use(route.url, router)
