@@ -5,7 +5,7 @@ import mongoose from 'mongoose'
 import * as service from '@/services/tokenService'
 import { connect, disconnect } from '~/helpers/db'
 import { decodeToken } from '@/services/tokenService'
-import { ErrorId, TokenDuration, TokenType, UnauthorizedAPIError } from '@/types'
+import { TokenDuration, TokenType, UnauthorizedAPIError } from '@/types'
 import { sleep } from '~/helpers/utils'
 import { TokenDocument, TokenModel, User, UserDocument, UserModel } from '@/models'
 
@@ -93,7 +93,7 @@ describe('token service', () => {
     
     it('should throw on a missing user', async () => {
       await service.createAuthorizationToken(<any>{}, response, next)
-      expect(next).toHaveBeenCalledWith(new UnauthorizedAPIError(ErrorId.UserMandatory))
+      expect(next).toHaveBeenCalledWith(new UnauthorizedAPIError('userMandatory'))
     })
     
     it('should create an authorization token', async () => {
@@ -119,7 +119,7 @@ describe('token service', () => {
     
     it('should throw on a missing user', async () => {
       await service.deleteAuthorizationToken(<any>{}, response, next)
-      expect(next).toHaveBeenCalledWith(new UnauthorizedAPIError(ErrorId.UserMandatory))
+      expect(next).toHaveBeenCalledWith(new UnauthorizedAPIError('userMandatory'))
     })
     
     it('should delete authorization tokens', async () => {

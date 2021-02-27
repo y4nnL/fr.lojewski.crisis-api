@@ -1,5 +1,5 @@
 import { monitoringLogger, ping } from '@/services/monitoringService'
-import { ErrorId, UnauthorizedAPIError } from '@/types'
+import { UnauthorizedAPIError } from '@/types'
 import { UserModel } from '@/models'
 
 describe('monitoring service', () => {
@@ -22,7 +22,7 @@ describe('monitoring service', () => {
     
     it('should not ping', async () => {
       ping(<any>{}, response, next)
-      expect(next).toHaveBeenCalledWith(new UnauthorizedAPIError(ErrorId.UserMandatory))
+      expect(next).toHaveBeenCalledWith(new UnauthorizedAPIError('userMandatory'))
       expect(response.statusCode).not.toStrictEqual(200)
       expect(response.json).not.toHaveBeenCalled()
     })

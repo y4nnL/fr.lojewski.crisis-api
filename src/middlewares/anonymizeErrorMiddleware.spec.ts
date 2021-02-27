@@ -1,5 +1,5 @@
 import { anonymizeError, anonymizeErrorLogger } from '@/middlewares/anonymizeErrorMiddleware'
-import { APIError, BadRequestAPIError, ErrorId, ForbiddenAPIError, UnauthorizedAPIError } from '@/types/error'
+import { APIError, BadRequestAPIError, ForbiddenAPIError, UnauthorizedAPIError } from '@/types/error'
 
 describe('anonymizeError middleware', () => {
   
@@ -29,7 +29,7 @@ describe('anonymizeError middleware', () => {
     })
   
     it('should next the anonymous error', () => {
-      const error = new UnauthorizedAPIError(ErrorId.ActionUnauthorized)
+      const error = new UnauthorizedAPIError('actionUnauthorized')
       const handler = anonymizeError(anonymousError, ({}, {}, localNext) => { localNext(error) })
       handler(<any>{}, <any>{}, next)
       expect(next).toHaveBeenCalledWith(anonymousError)
@@ -70,9 +70,9 @@ describe('anonymizeError middleware', () => {
   
     it('should next the anonymous error', () => {
       // In an express context, the second and third next functions would never be called
-      const error1 = new UnauthorizedAPIError(ErrorId.ActionUnauthorized)
+      const error1 = new UnauthorizedAPIError('actionUnauthorized')
       const error2 = new ForbiddenAPIError()
-      const error3 = new BadRequestAPIError([ErrorId.PasswordEmpty])
+      const error3 = new BadRequestAPIError(['passwordEmpty'])
       const handlers = anonymizeError(
         anonymousError,
         ({}, {}, localNext) => { localNext(error1) },

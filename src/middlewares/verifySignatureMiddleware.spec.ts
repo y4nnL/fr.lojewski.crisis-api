@@ -3,7 +3,7 @@ import fs from 'fs'
 import httpSignature from 'http-signature'
 import path from 'path'
 import { connect, disconnect } from '~/helpers/db'
-import { ErrorId, UnauthorizedAPIError } from '@/types'
+import { UnauthorizedAPIError } from '@/types'
 import { exec } from 'child_process'
 import { verifySignature, verifySignatureLogger } from '@/middlewares/verifySignatureMiddleware'
 import { sleep } from '~/helpers/utils'
@@ -91,13 +91,13 @@ describe('verifySignature middleware', () => {
   it('should reject a malformed signature', async () => {
     request.setHeader('authorization', 'malformed')
     await verifySignature(request, response, next)
-    expect(next).toHaveBeenCalledWith(new UnauthorizedAPIError(ErrorId.SignatureMalformed))
+    expect(next).toHaveBeenCalledWith(new UnauthorizedAPIError('signatureMalformed'))
   })
   
   it('should reject an unknown signature id', async () => {
     httpSignature.sign(request, { key: rsa1.key, keyId: rsa1.id, keyPassphrase: rsa1.pwd })
     await verifySignature(request, response, next)
-    expect(next).toHaveBeenCalledWith(new UnauthorizedAPIError(ErrorId.SignatureUnknown))
+    expect(next).toHaveBeenCalledWith(new UnauthorizedAPIError('signatureUnknown'))
   })
   
   it('should reject a not found signature pub', async () => {
@@ -105,7 +105,7 @@ describe('verifySignature middleware', () => {
     env['sshKeys'] = [ rsa2.id ]
     httpSignature.sign(request, { key: rsa2.key, keyId: rsa2.id, keyPassphrase: rsa2.pwd })
     await verifySignature(request, response, next)
-    expect(next).toHaveBeenCalledWith(new UnauthorizedAPIError(ErrorId.SignatureNotFound))
+    expect(next).toHaveBeenCalledWith(new UnauthorizedAPIError('signatureNotFound'))
   })
   
   it('should reject a wrong signature pub', async () => {
@@ -113,7 +113,7 @@ describe('verifySignature middleware', () => {
     env['sshKeys'] = [ rsa1.id ]
     httpSignature.sign(request, { key: rsa2.key, keyId: rsa1.id, keyPassphrase: rsa2.pwd })
     await verifySignature(request, response, next)
-    expect(next).toHaveBeenCalledWith(new UnauthorizedAPIError(ErrorId.SignatureNotVerified))
+    expect(next).toHaveBeenCalledWith(new UnauthorizedAPIError('signatureNotVerified'))
   })
   
   it('should reject a malformed signature pub', async () => {
@@ -121,7 +121,7 @@ describe('verifySignature middleware', () => {
     env['sshKeys'] = [ rsa3.id ]
     httpSignature.sign(request, { key: rsa3.key, keyId: rsa3.id, keyPassphrase: rsa3.pwd })
     await verifySignature(request, response, next)
-    expect(next).toHaveBeenCalledWith(new UnauthorizedAPIError(ErrorId.SignatureNotVerified))
+    expect(next).toHaveBeenCalledWith(new UnauthorizedAPIError('signatureNotVerified'))
   })
   
   it('should accept the only one verified signature', async () => {
@@ -156,7 +156,7 @@ describe('verifySignature middleware', () => {
     request.setHeader('authorization', lastAuthorization)
     request.setHeader('date', lastDate)
     await verifySignature(request, response, next)
-    expect(next).toHaveBeenCalledWith(new UnauthorizedAPIError(ErrorId.SignatureAlreadyVerified))
+    expect(next).toHaveBeenCalledWith(new UnauthorizedAPIError('signatureAlreadyVerified'))
   })
   
 })

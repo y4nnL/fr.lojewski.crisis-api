@@ -1,5 +1,5 @@
 import mongoose from 'mongoose'
-import { BadRequestAPIError, ErrorId, NotFoundAPIError, TokenDuration, TokenType, UnauthorizedAPIError } from '@/types'
+import { BadRequestAPIError, NotFoundAPIError, TokenDuration, TokenType, UnauthorizedAPIError } from '@/types'
 import { connect, disconnect } from '~/helpers/db'
 import { encodeToken } from '@/services/tokenService'
 import { findUserByToken, findUserByTokenLogger } from './findUserByTokenMiddleware'
@@ -55,23 +55,23 @@ describe('findUserByToken middleware', () => {
   
   it('should throw on empty authorization', async () => {
     await findUserByToken(request, response, next)
-    expect(next).toHaveBeenCalledWith(new BadRequestAPIError([ ErrorId.AuthorizationNotFound ]))
+    expect(next).toHaveBeenCalledWith(new BadRequestAPIError([ 'authorizationNotFound' ]))
     request.headers['x-authorization'] = 'unknown'
     await findUserByToken(request, response, next)
-    expect(next).toHaveBeenCalledWith(new BadRequestAPIError([ ErrorId.AuthorizationNotFound ]))
+    expect(next).toHaveBeenCalledWith(new BadRequestAPIError([ 'authorizationNotFound' ]))
   })
   
   it('should throw on malformed authorization', async () => {
     request.headers['x-authorization'] = 'Bearer malformed'
     await findUserByToken(request, response, next)
-    expect(next).toHaveBeenCalledWith(new BadRequestAPIError([ ErrorId.AuthorizationMalformed ]))
+    expect(next).toHaveBeenCalledWith(new BadRequestAPIError([ 'authorizationMalformed' ]))
   })
   
   it('should throw on a expired authorization', async () => {
     request.headers['x-authorization'] = 'Bearer ' + encodeToken('token', <TokenDuration>'1s')
     await sleep(2)
     await findUserByToken(request, response, next)
-    expect(next).toHaveBeenCalledWith(new BadRequestAPIError([ ErrorId.AuthorizationMalformed ]))
+    expect(next).toHaveBeenCalledWith(new BadRequestAPIError([ 'authorizationMalformed' ]))
   })
   
   it('should throw on a not found token', async () => {
@@ -89,7 +89,7 @@ describe('findUserByToken middleware', () => {
   it('should throw on a token without user', async () => {
     request.headers['x-authorization'] = 'Bearer ' + encodeToken('token without user', TokenDuration.Authorization)
     await findUserByToken(request, response, next)
-    expect(next).toHaveBeenCalledWith(new UnauthorizedAPIError(ErrorId.UserMandatory))
+    expect(next).toHaveBeenCalledWith(new UnauthorizedAPIError('userMandatory'))
   })
   
   it('should find a user', async () => {

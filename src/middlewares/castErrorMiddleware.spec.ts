@@ -8,6 +8,7 @@ describe('castError middleware', () => {
   const next: any = jest.fn()
   const request: any = {}
   const response: any = {}
+  const unknownErrorId: error.ErrorId = '__unknown__'
   
   it('should cast Error to APIError', () => {
     castError(null, request, response, next)
@@ -35,37 +36,37 @@ describe('castError middleware', () => {
   })
   
   it('should cast ForbiddenAPIError to APIError', () => {
-    const forbidden = new error.ForbiddenAPIError(error.ErrorId.ActionUnauthorized)
+    const forbidden = new error.ForbiddenAPIError('actionUnauthorized')
     castError(forbidden, request, response, next)
-    expect(next).toHaveBeenCalledWith(new error.APIError(forbidden.statusCode, error.ErrorId.ActionUnauthorized))
+    expect(next).toHaveBeenCalledWith(new error.APIError(forbidden.statusCode, 'actionUnauthorized'))
   })
   
   it('should cast UnauthorizedAPIError to APIError', () => {
-    const unauthorized = new error.ForbiddenAPIError(error.ErrorId.UserMandatory)
+    const unauthorized = new error.ForbiddenAPIError('userMandatory')
     castError(unauthorized, request, response, next)
-    expect(next).toHaveBeenCalledWith(new error.APIError(unauthorized.statusCode, error.ErrorId.UserMandatory))
+    expect(next).toHaveBeenCalledWith(new error.APIError(unauthorized.statusCode, 'userMandatory'))
   })
   
   it('should cast valid express-validation ValidationError to APIError', () => {
     const body = [
-      { message: error.ErrorId.EmailRequired },
-      { message: error.ErrorId.EmailMalformed },
+      { message: 'emailRequired' },
+      { message: 'emailMalformed' },
     ]
     const validation = new ValidationError({ body }, { statusCode: 400 })
     castError(validation, request, response, next)
     expect(next).toHaveBeenCalledWith(new error.BadRequestAPIError([
-      error.ErrorId.EmailRequired,
-      error.ErrorId.EmailMalformed,
+      'emailRequired',
+      'emailMalformed',
     ]))
     expect(next).not.toHaveBeenCalledWith(
-      expect.objectContaining({ message: expect.stringContaining(error.ErrorId.__Unknown__) }))
+      expect.objectContaining({ message: expect.stringContaining(unknownErrorId) }))
   })
   
   it('should cast invalid express-validation ValidationError to APIError', () => {
     const body = [ { message: 'invalid' } ]
     const validation = new ValidationError({ body }, { statusCode: 400 })
     castError(validation, request, response, next)
-    expect(next).toHaveBeenCalledWith(new error.BadRequestAPIError([ error.ErrorId.__Unknown__ ]))
+    expect(next).toHaveBeenCalledWith(new error.BadRequestAPIError([ unknownErrorId ]))
   })
   
   it('should cast no body express-validation ValidationError to APIError', () => {

@@ -3,14 +3,7 @@ import bcrypt from 'bcrypt'
 import supertest from 'supertest'
 import { anonymizeErrorLogger } from '@/middlewares/anonymizeErrorMiddleware'
 import { app } from '@/core/server'
-import {
-  BadRequestAPIError,
-  ErrorId,
-  ForbiddenAPIError,
-  NotFoundAPIError,
-  UnauthorizedAPIError,
-  UserAction,
-} from '@/types'
+import { BadRequestAPIError, ForbiddenAPIError, NotFoundAPIError, UnauthorizedAPIError, UserAction } from '@/types'
 import { connect, disconnect } from '~/helpers/db'
 import { getSignatureHeaders } from '~/helpers/utils'
 import { User, UserDocument, UserModel } from '@/models'
@@ -69,8 +62,8 @@ describe('token routes', () => {
         const response = await postAuthorization(null)
         expect(response.status).toStrictEqual(400)
         expect(response.body.message).toStrictEqual(new BadRequestAPIError([
-          ErrorId.EmailRequired,
-          ErrorId.PasswordRequired,
+          'emailRequired',
+          'passwordRequired',
         ]).toString())
       })
     })
@@ -109,7 +102,7 @@ describe('token routes', () => {
         expect(response.status).toStrictEqual(401)
         expect(response.body.message).toStrictEqual(unauthorized.toString())
         expect(anonymizeErrorLoggerSpy).toHaveBeenCalledWith(
-          `Replaced ${ new UnauthorizedAPIError(ErrorId.PasswordMismatch) } with ${ unauthorized }`)
+          `Replaced ${ new UnauthorizedAPIError('passwordMismatch') } with ${ unauthorized }`)
       })
       
     })
@@ -121,7 +114,7 @@ describe('token routes', () => {
         expect(response.status).toStrictEqual(401)
         expect(response.body.message).toStrictEqual(unauthorized.toString())
         expect(anonymizeErrorLoggerSpy).toHaveBeenCalledWith(
-          `Replaced ${ new ForbiddenAPIError(ErrorId.ActionUnauthorized) } with ${ unauthorized }`)
+          `Replaced ${ new ForbiddenAPIError('actionUnauthorized') } with ${ unauthorized }`)
       })
       
     })
@@ -155,7 +148,7 @@ describe('token routes', () => {
         const response = await deleteAuthorization()
         expect(response.status).toStrictEqual(400)
         expect(response.body.message).toStrictEqual(
-          new BadRequestAPIError([ ErrorId.AuthorizationNotFound ]).toString())
+          new BadRequestAPIError([ 'authorizationNotFound' ]).toString())
       })
       
     })
@@ -165,7 +158,7 @@ describe('token routes', () => {
       it('should not pass', async () => {
         const response = await deleteAuthorization(true)
         expect(response.status).toStrictEqual(403)
-        expect(response.body.message).toStrictEqual(new ForbiddenAPIError(ErrorId.ActionUnauthorized).toString())
+        expect(response.body.message).toStrictEqual(new ForbiddenAPIError('actionUnauthorized').toString())
       })
       
     })

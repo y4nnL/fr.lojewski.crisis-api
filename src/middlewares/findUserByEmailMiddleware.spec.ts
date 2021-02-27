@@ -1,4 +1,4 @@
-import { BadRequestAPIError, ErrorId, NotFoundAPIError } from '@/types'
+import { BadRequestAPIError, NotFoundAPIError } from '@/types'
 import { connect, disconnect } from '~/helpers/db'
 import { findUserByEmail, findUserByEmailLogger } from './findUserByEmailMiddleware'
 import { User, UserDocument, UserModel } from '@/models/User'
@@ -31,13 +31,13 @@ describe('findUserByEmail middleware', () => {
   
   it('should throw on empty body', async () => {
     await findUserByEmail(request, response, next)
-    expect(next).toHaveBeenCalledWith(new BadRequestAPIError([ ErrorId.EmailRequired ]))
+    expect(next).toHaveBeenCalledWith(new BadRequestAPIError([ 'emailRequired' ]))
     request.body = null
     await findUserByEmail(request, response, next)
-    expect(next).toHaveBeenCalledWith(new BadRequestAPIError([ ErrorId.EmailRequired ]))
+    expect(next).toHaveBeenCalledWith(new BadRequestAPIError([ 'emailRequired' ]))
     request.body = {}
     await findUserByEmail(request, response, next)
-    expect(next).toHaveBeenCalledWith(new BadRequestAPIError([ ErrorId.EmailRequired ]))
+    expect(next).toHaveBeenCalledWith(new BadRequestAPIError([ 'emailRequired' ]))
   })
   
   it('should throw on not found user', async () => {

@@ -1,4 +1,5 @@
 import httpStatus from 'http-status'
+import { StringUnion } from '@/utils/lib'
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Base class
@@ -56,26 +57,29 @@ export class NotFoundAPIError extends APIError {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Messages
 
-export enum ErrorId {
-  __Unknown__ = '__Unknown__',
-  ActionUnauthorized = 'ActionUnauthorized',
-  AuthorizationMalformed = 'AuthorizationMalformed',
-  AuthorizationNotFound = 'AuthorizationNotFound',
-  EmailEmpty = 'EmailEmpty',
-  EmailMalformed = 'EmailMalformed',
-  EmailNotString = 'EmailNotString',
-  EmailRequired = 'EmailRequired',
-  PasswordEmpty = 'PasswordEmpty',
-  PasswordMalformed = 'PasswordMalformed',
-  PasswordMismatch = 'PasswordMismatch',
-  PasswordNotString = 'PasswordNotString',
-  PasswordRequired = 'PasswordRequired',
-  PasswordTooLong = 'PasswordTooLong',
-  PasswordTooShort = 'PasswordTooShort',
-  SignatureAlreadyVerified = 'SignatureAlreadyVerified',
-  SignatureMalformed = 'SignatureMalformed',
-  SignatureNotFound = 'SignatureNotFound',
-  SignatureNotVerified = 'SignatureNotVerified',
-  SignatureUnknown = 'SignatureUnknown',
-  UserMandatory = 'UserMandatory',
-}
+export const ErrorId = StringUnion(
+  '__unknown__',
+  'actionUnauthorized',
+  'authorizationMalformed',
+  'authorizationNotFound',
+  'emailEmpty',
+  'emailMalformed',
+  'emailNotString',
+  'emailRequired',
+  'passwordEmpty',
+  'passwordMalformed',
+  'passwordMismatch',
+  'passwordNotString',
+  'passwordRequired',
+  'passwordTooLong',
+  'passwordTooShort',
+  'signatureAlreadyVerified',
+  'signatureMalformed',
+  'signatureNotFound',
+  'signatureNotVerified',
+  'signatureUnknown',
+  'userMandatory',
+)
+
+export type ErrorId = typeof ErrorId.type
+

@@ -1,13 +1,13 @@
 import { authorize } from './authorizeMiddleware'
-import { ErrorId, ForbiddenAPIError, UnauthorizedAPIError, UserAction } from '@/types'
+import { ForbiddenAPIError, UnauthorizedAPIError, UserAction } from '@/types'
 import { UserModel } from '@/models/User'
 import { userService } from '@/services'
 
 describe('Authorize middleware', () => {
   
   let request: any
-  let userMandatoryError = new UnauthorizedAPIError(ErrorId.UserMandatory)
-  let unauthorizedActionError = new ForbiddenAPIError(ErrorId.ActionUnauthorized)
+  let userMandatoryError = new UnauthorizedAPIError('userMandatory')
+  let unauthorizedActionError = new ForbiddenAPIError('actionUnauthorized')
   
   const next = jest.fn()
   const response: any = {}

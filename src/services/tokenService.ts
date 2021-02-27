@@ -5,12 +5,10 @@ import { assert } from '@/utils/assert'
 import {
   AuthorizationCreateRequestHandler,
   AuthorizationDeleteRequestHandler,
-  ErrorId,
   TokenDuration,
   TokenType,
   UnauthorizedAPIError,
 } from '@/types'
-import { isUserPasswordValid } from '@/services/userService'
 import { Token, TokenDocument, TokenModel } from '@/models'
 import { v4 as uuidV4 } from 'uuid'
 
@@ -37,7 +35,7 @@ export const decodeToken = (signedToken: string, maxAge: TokenDuration): string 
 
 export const createAuthorizationToken: AuthorizationCreateRequestHandler = async (request, response, next) => {
   try {
-    assert.ok(request.user, new UnauthorizedAPIError(ErrorId.UserMandatory))
+    assert.ok(request.user, new UnauthorizedAPIError('userMandatory'))
     const token: Token = {
       token: uuidV4(),
       type: TokenType.Authorization,
@@ -56,7 +54,7 @@ export const createAuthorizationToken: AuthorizationCreateRequestHandler = async
 
 export const deleteAuthorizationToken: AuthorizationDeleteRequestHandler = async (request, response, next) => {
   try {
-    assert.ok(request.user, new UnauthorizedAPIError(ErrorId.UserMandatory))
+    assert.ok(request.user, new UnauthorizedAPIError('userMandatory'))
     await TokenModel.find({ userId: request.user._id, type: TokenType.Authorization }).deleteMany().exec()
     tokenLogger.pass(`Deleted all the authorization tokens for ${ request.user }`)
     response.status(200)

@@ -3,14 +3,11 @@ import { APIError, BadRequestAPIError, ErrorId } from '@/types'
 import { ErrorRequestHandler } from 'express'
 import { ValidationError } from 'express-validation'
 
-const ErrorIdValues = Object.values(ErrorId)
-
 export const castError: ErrorRequestHandler = (error: any, request, response, next) => {
   if (error instanceof ValidationError) {
-    const errorId: ErrorId[] = []
-    error.details.body?.forEach((body) => errorId.push(
-      ErrorIdValues.includes(<ErrorId>body.message) ? <ErrorId>body.message : ErrorId.__Unknown__))
-    error = new BadRequestAPIError(errorId)
+    const errorIds: ErrorId[] = []
+    error.details.body?.forEach((body) => errorIds.push(ErrorId.narrow(body.message) ? body.message : '__unknown__'))
+    error = new BadRequestAPIError(errorIds)
     error.stack = ''
   } else {
     if (!(error instanceof APIError)) {

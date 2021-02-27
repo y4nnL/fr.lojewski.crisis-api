@@ -1,12 +1,12 @@
 import assert from '@/utils/assert'
 import createLogger from '@/utils/logger'
-import { ErrorId, PingRequestHandler, UnauthorizedAPIError } from '@/types'
+import { PingRequestHandler, UnauthorizedAPIError } from '@/types'
 
 export const monitoringLogger = createLogger('monitoring')
 
 export const ping: PingRequestHandler = async (request, response, next) => {
   try {
-    assert(request.user, new UnauthorizedAPIError(ErrorId.UserMandatory))
+    assert(request.user, new UnauthorizedAPIError('userMandatory'))
     monitoringLogger.pass(`${ request.user } ping OK`)
     response.status(200)
       .json({ pong: true })
